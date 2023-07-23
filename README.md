@@ -21,7 +21,7 @@ python3 viewdata.py
 python3 query.py
 
 ## Example
-(Query)> I want to know when was the meeting about aws conducted
+(Query)> What option did I think the employee should choose?
 
 # `reload_qa` is a special command to reload the prompt in config.PROMPT_TEMPLATE
 (Query)> reload_qa
