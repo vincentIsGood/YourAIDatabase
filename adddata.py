@@ -6,6 +6,12 @@ import configs.common as config
 import configs.llama2 as model_config
 from lib.docloader import Loaders
 
+def filenameNoExt(nonDirFile: str):
+    dotIndex = nonDirFile.rfind(".")
+    if dotIndex != -1:
+        return nonDirFile[:dotIndex]
+    return nonDirFile
+
 def loadData():
     loader = Loaders("utf-8")
 
@@ -14,6 +20,8 @@ def loadData():
         os.mkdir(importedDir, mode=755)
 
     for file in os.listdir(config.DOCS_DIRECTORY):
+        if filenameNoExt(file).endswith("_ignore"):
+            continue
         docFilename = config.DOCS_DIRECTORY + "/" + file
         if os.path.isdir(docFilename):
             continue
