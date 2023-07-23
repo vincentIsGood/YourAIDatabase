@@ -6,7 +6,7 @@ Command line is not extensively suppoorted. Manually modifying source code MAY b
 
 Steps to add and query documents:
 
-1. `adddata.py` will automatically import `docs/*` files into Chroma db, remember to delete / remove the document from `docs/` directory after importing the documents (to prevent them from being loaded again)
+1. `adddata.py` will automatically import `docs/*` files into Chroma db. And it is not recommended to put the same file into `docs/` directory because it will be reimported.
 ```py
 python3 adddata.py
 ```

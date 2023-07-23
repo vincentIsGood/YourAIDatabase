@@ -1,20 +1,8 @@
 ## Maybe Helpful
 # https://huggingface.co/sentence-transformers
 
-DEVICE = "cpu"
-
-#### Storage Config
-PERSIST_DIRECTORY = "./chroma_db"
-CACHE_DIR = "./models"
-DOCS_DIRECTORY = "./docs"
-
-#### DB & Query Config (MINI-ORCA)
 SENTENCE_EMBEDDING_MODEL = "all-MiniLM-L6-v2"
 LLM_MODEL = "psmathur/orca_mini_v2_7b"
-HF_ACCESS_TOKEN = ""
-
-#### Output Config
-USE_TOP_K_SIMILAR_DOC = 1
 
 PROMPT_TEMPLATE = """
 ### System:

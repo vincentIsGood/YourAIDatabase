@@ -7,7 +7,8 @@ from langchain.schema import Document
 ###
 
 class Loaders:
-    def __init__(self):
+    def __init__(self, encoding = None):
+        self.encoding = encoding
         self.loadedDocs: 'List[Document]' = []
         self.textSplitter = CharacterTextSplitter(
             chunk_size=4000, 
@@ -15,7 +16,8 @@ class Loaders:
         )
 
     def loadDoc(self, pathToTxt):
-        self.loadedDocs.append(*self.textSplitter.split_documents(TextLoader(pathToTxt).load()))
+        doc = TextLoader(pathToTxt, encoding=self.encoding).load()
+        self.loadedDocs.append(*self.textSplitter.split_documents(doc))
 
     def getDocs(self):
         return self.loadedDocs

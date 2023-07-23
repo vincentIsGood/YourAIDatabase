@@ -7,3 +7,6 @@ docs/**
 models/**
 
 configs/**
+!configs/common.py
+!configs/llama2.py
+!configs/miniorca.py
