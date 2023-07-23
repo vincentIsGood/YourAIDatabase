@@ -1,3 +1,5 @@
 langchain
 langchain[llms]
 chromadb
+
+# download torch on its offical website
