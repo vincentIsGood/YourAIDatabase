@@ -63,7 +63,7 @@ def createRetrievalQA(llm: BaseLanguageModel, retriever: VectorStoreRetriever):
     )
 
 def main():
-    embedding_func = SentenceTransformerEmbeddings(model_name=config.SENTENCE_EMBEDDING_MODEL)
+    embedding_func = SentenceTransformerEmbeddings(model_name=config.SENTENCE_EMBEDDING_MODEL, cache_folder=config.CACHE_DIR)
     chromadb = Chroma(persist_directory=config.PERSIST_DIRECTORY, embedding_function=embedding_func)
     print("[+] Chroma # of collections: ", chromadb._collection.count())
 

@@ -5,3 +5,5 @@ docs/**
 !docs/EmployeeSituation.txt
 
 models/**
+
+configs/**
