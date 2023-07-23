@@ -80,6 +80,9 @@ def main():
 
     while True:
         userInput = input("(Query)> ").strip()
+        if userInput.strip() == "":
+            continue
+        
         if userInput == "reload_qa":
             importlib.reload(model_config)
             retrievalQA = createRetrievalQA(llm, retriever)
