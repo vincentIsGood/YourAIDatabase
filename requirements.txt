@@ -1,5 +1,13 @@
 langchain
 langchain[llms]
+unstructured[local-inference]
 chromadb
+
+# https://stackoverflow.com/questions/76247540/loading-data-using-unstructuredurlloader-of-langchain-halts-with-tp-num-c-buf
+python-magic
+python-magic-bin
+tabulate
+pdf2image
+pytesseract
 
 # download torch on its offical website

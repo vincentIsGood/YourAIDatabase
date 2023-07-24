@@ -26,3 +26,6 @@ python3 query.py
 # `reload_qa` is a special command to reload the prompt in config.PROMPT_TEMPLATE
 (Query)> reload_qa
 ```
+
+## Notes
+Inspired by a project `PrivateGPT`.

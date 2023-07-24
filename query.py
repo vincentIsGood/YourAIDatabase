@@ -40,7 +40,7 @@ def createLLM():
         "text-generation",
         model=langmodel,
         tokenizer=tokenizer,
-        streamer=TextStreamer(tokenizer),
+        streamer=TextStreamer(tokenizer, skip_prompt=config.SKIP_PROMPT),
 
         device_map=config.DEVICE,
         max_length=1000,
@@ -78,19 +78,22 @@ def main():
     llm = createLLM()
     retrievalQA = createRetrievalQA(llm, retriever)
 
-    while True:
-        userInput = input("(Query)> ").strip()
-        if userInput.strip() == "":
-            continue
-        
-        if userInput == "reload_qa":
-            importlib.reload(model_config)
-            retrievalQA = createRetrievalQA(llm, retriever)
-            continue
-        
-        res = retrievalQA({"query": userInput})
-        # print(res["result"])
-        for source in res["source_documents"]:
-            print(source.metadata)
+    try:
+        while True:
+            userInput = input("(Query)> ").strip()
+            if userInput.strip() == "":
+                continue
+            
+            if userInput == "reload_qa":
+                importlib.reload(model_config)
+                retrievalQA = createRetrievalQA(llm, retriever)
+                continue
+            
+            res = retrievalQA({"query": userInput})
+            # print(res["result"])
+            for source in res["source_documents"]:
+                print(source.metadata)
+    except InterruptedError as e:
+        print("[!] Interrupt detected. Closing application.")
 
 main()
