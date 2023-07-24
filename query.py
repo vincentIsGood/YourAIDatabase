@@ -12,6 +12,7 @@ from transformers import AutoModelForCausalLM, AutoTokenizer, TextStreamer
 
 import configs.common as config
 import configs.llama2 as model_config
+from utils.InteractiveConsole import InteractiveConsole, SimpleCommandHandler
 
 ### Types
 from langchain.vectorstores.base import VectorStoreRetriever
@@ -78,22 +79,23 @@ def main():
     llm = createLLM()
     retrievalQA = createRetrievalQA(llm, retriever)
 
-    try:
-        while True:
-            userInput = input("(Query)> ").strip()
-            if userInput.strip() == "":
-                continue
-            
-            if userInput == "reload_qa":
-                importlib.reload(model_config)
-                retrievalQA = createRetrievalQA(llm, retriever)
-                continue
-            
-            res = retrievalQA({"query": userInput})
-            # print(res["result"])
-            for source in res["source_documents"]:
-                print(source.metadata)
-    except InterruptedError as e:
-        print("[!] Interrupt detected. Closing application.")
+    def query(args):
+        userInput = input("[*] Type in your query: ").strip()
+        if userInput == "": return
+
+        res = retrievalQA({"query": userInput})
+        # print(res["result"])
+        for source in res["source_documents"]:
+            print(source.metadata)
+
+    def reload_qa(args):
+        nonlocal retrievalQA
+        importlib.reload(model_config)
+        retrievalQA = createRetrievalQA(llm, retriever)
+
+    console = InteractiveConsole("(cmd)> ")
+    console.addHandler(SimpleCommandHandler(query, "query", "Query your AI database"))
+    console.addHandler(SimpleCommandHandler(reload_qa, "reload_qa", "Reload your prompt"))
+    console.takeover()
 
 main()

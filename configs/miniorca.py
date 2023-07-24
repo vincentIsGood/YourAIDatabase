@@ -6,16 +6,14 @@ LLM_MODEL = "psmathur/orca_mini_v2_7b"
 
 PROMPT_TEMPLATE = """
 ### System:
-You are an AI assistant that helps people find information.
+You are an AI assistant that helps people find information. 
+If you don't know the answer, just say that you don't know. 
+Justification is not needed.
 
 ### User:
-Does the given information contain any answers to the following question?
-
-If you don't know the answer, just say that you don't know.
+Does the given information contains any answers to the following question?
 
 {question}
-
-Justification is not needed.
 
 ### Input:
 {context}
