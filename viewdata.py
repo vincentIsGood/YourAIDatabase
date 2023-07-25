@@ -4,7 +4,7 @@ from langchain.embeddings.sentence_transformer import SentenceTransformerEmbeddi
 
 import configs.common as config
 import configs.llama2 as model_config
-from utils.InteractiveConsole import InteractiveConsole, SimpleCommandHandler
+from lib.utils.InteractiveConsole import InteractiveConsole, SimpleCommandHandler
 
 cmdParser = argparse.ArgumentParser()
 cmdParser.add_argument("-id", "--docid", default=None, type=str, help="Print content of a document")

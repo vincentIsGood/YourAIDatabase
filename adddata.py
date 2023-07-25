@@ -5,7 +5,7 @@ import shutil
 import configs.common as config
 import configs.llama2 as model_config
 from lib.docloader import Loaders
-import utils.FileUtils as FileUtils
+import lib.utils.FileUtils as FileUtils
 
 def loadData():
     loader = Loaders("utf-8")

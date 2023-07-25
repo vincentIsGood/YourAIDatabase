@@ -12,7 +12,7 @@ from transformers import AutoModelForCausalLM, AutoTokenizer, TextStreamer
 
 import configs.common as config
 import configs.llama2 as model_config
-from utils.InteractiveConsole import InteractiveConsole, SimpleCommandHandler
+from lib.utils.InteractiveConsole import InteractiveConsole, SimpleCommandHandler
 
 ### Types
 from langchain.vectorstores.base import VectorStoreRetriever
@@ -53,7 +53,7 @@ def createLLM():
     return HuggingFacePipeline(
         pipeline=pipeline,
         model_kwargs={
-            "temperature": 0,
+            "temperature": 0.2,
         },
         callbacks=[StreamingStdOutCallbackHandler()]
     )
