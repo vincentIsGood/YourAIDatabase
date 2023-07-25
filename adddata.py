@@ -4,7 +4,7 @@ import shutil
 
 import configs.common as config
 import configs.llama2 as model_config
-from lib.docloader import Loaders
+from lib.DocLoader import Loaders
 import lib.utils.FileUtils as FileUtils
 
 def loadData():
