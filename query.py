@@ -21,7 +21,7 @@ from langchain.schema import BaseLanguageModel
 ###
 
 def main():
-    aiDatabaseQuerier = AiDatabaseQuerier()
+    aiDatabaseQuerier = AiDatabaseQuerier([StreamingStdOutCallbackHandler()])
 
     def query(args):
         aiDatabaseQuerier.query(input("[*] Type in your query: "))

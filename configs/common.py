@@ -1,6 +1,6 @@
 # cpu, cuda, mps
 DEVICE = "cpu"
-SKIP_PROMPT = False
+SKIP_PROMPT = True
 
 ### Storage Config
 PERSIST_DIRECTORY = "./chroma_db"

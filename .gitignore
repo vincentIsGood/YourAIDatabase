@@ -1,3 +1,6 @@
+0_*
+
+# Base
 __pycache__
 chroma_db/**
 
@@ -7,3 +10,7 @@ docs/**
 models/**
 
 configs/**
+
+## Webapp (not yet ready)
+flask_main.py
+public/
