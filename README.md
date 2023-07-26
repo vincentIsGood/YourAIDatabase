@@ -54,7 +54,7 @@ python3 query.py
 
 ## Example
 (cmd)> query
-What option did I think the employee should choose?
+[*] Type in your query: What option did I think the employee should choose?
 
 # `reload_qa` is a special command to reload the prompt specified in config.PROMPT_TEMPLATE
 (cmd)> reload_qa
