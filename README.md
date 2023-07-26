@@ -2,6 +2,13 @@
 Give your documents to the AI and let your LLM to analyze your documents on querying.
 
 ## How to use it
+First, make sure you have `torch` installed. 
+
+Then, install project dependencies with 
+```sh
+pip install -r requirements.txt
+```
+
 ### Web-Application
 A simple web application is made to make querying simpler.
 
@@ -9,6 +16,8 @@ To run it, make sure `flask` is installed with something like `pip install Flask
 ```sh
 python3 flask_main.py
 ```
+
+Then, head to [http://127.0.0.1:5022/app/](http://127.0.0.1:5022/app/)
 
 ### Command line
 Manually modifying source code MAY be needed. (in the `configs/` folder)

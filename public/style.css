@@ -1,0 +1,139 @@
+
+:root{
+    --bg-color-main: rgb(22, 22, 22);
+    --bg-color-2: rgb(33, 33, 33);
+    --bg-color-3: rgb(43, 43, 43);
+
+    --item-color: rgb(135, 194, 228);
+    --item-color-2: rgb(99, 99, 99);
+    --item-color-red: rgb(216, 43, 43);
+
+    --text-color: rgb(207, 207, 207);
+    --text-contrast-color: var(--bg-color-main);
+}
+*{
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    outline: none;
+}
+body{
+    background-color: var(--bg-color-main);
+    color: var(--text-color);
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+}
+.display-none{
+    display: none;
+}
+.chat-window{
+    width: 100%;
+    height: 100vh;
+    display: grid;
+    grid-template-rows: 10% 70% 20%;
+    grid-template-columns: 80%;
+    justify-content: center;
+}
+.chat-window > div{
+    margin: 1rem;
+    background-color: var(--bg-color-3);
+    border-radius: 1rem;
+}
+
+.title{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 1rem;
+    font-size: 2rem;
+    letter-spacing: 0.1rem;
+}
+
+.chat-history{
+    display: flex;
+    flex-direction: column;
+}
+.conversation{
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    height: 100%;
+    padding: 1rem;
+    padding-bottom: 5rem;
+    overflow-y: auto;
+}
+.user{
+    display: flex;
+    justify-content: flex-end;
+    width: 100%;
+    text-align: right;
+}
+.assistant{
+    display: flex;
+    justify-content: flex-start;
+    width: 100%;
+    text-align: left;
+}
+.user > .content, .assistant > .content{
+    padding: 0.5rem 1rem;
+    background-color: var(--item-color-2);
+    border-radius: 1rem;
+    white-space: pre-wrap;
+    overflow-wrap: break-word;
+    max-width: 60%;
+    width: fit-content;
+}
+.input-box-wrapper{
+    display: flex;
+    gap: 1rem;
+    width: 100%;
+    height: min-content;
+    padding: 1rem;
+    background-color: var(--bg-color-3);
+    border-radius: 1rem;
+}
+.input-box-wrapper input{
+    width: 100%;
+    height: 3rem;
+    border: none;
+    padding: 0 1rem;
+    background: none;
+    color: var(--text-color);
+    font-size: 1rem;
+    border-radius: 1rem;
+    background-color: var(--bg-color-2);
+}
+.input-box-wrapper button{
+    width: fit-content;
+    height: 3rem;
+    padding: 0 2rem;
+    border: none;
+    border-radius: 1rem;
+    background-color: var(--item-color);
+    font-size: 1rem;
+}
+.input-box-wrapper button:hover{
+    filter: brightness(80%);
+}
+button#stop{
+    color: var(--text-color);
+    background-color: var(--item-color-red);
+}
+
+.sources{
+    display: flex;
+    padding: 1rem;
+    gap: 1rem;
+    overflow-y: auto;
+}
+.sources > div{
+    width: min-content;
+    height: min-content;
+    padding: 0.4rem 2rem;
+    border-radius: 0.5rem;
+    background-color: var(--item-color);
+    color: var(--text-contrast-color);
+    white-space: pre;
+}
+.sources > div:hover{
+    filter: brightness(80%);
+}

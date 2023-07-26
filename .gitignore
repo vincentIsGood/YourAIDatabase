@@ -12,5 +12,5 @@ models/**
 configs/**
 
 ## Webapp (not yet ready)
-flask_main.py
-public/
+# flask_main.py
+# public/
