@@ -61,4 +61,6 @@ python3 query.py
 ```
 
 ## Notes
-Inspired by a project `PrivateGPT`.
+Used: Chromadb, LangChain, HuggingFace, Flask
+
+Inspired by a project called `PrivateGPT`.
