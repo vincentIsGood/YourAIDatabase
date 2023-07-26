@@ -1,3 +1,5 @@
+from . import llama2 as model_config
+
 # cpu, cuda, mps
 DEVICE = "cpu"
 SKIP_PROMPT = True

@@ -3,7 +3,7 @@ import sys
 import shutil
 
 import configs.common as config
-import configs.llama2 as model_config
+from configs.common import model_config
 from lib.DocLoader import Loaders
 import lib.utils.FileUtils as FileUtils
 

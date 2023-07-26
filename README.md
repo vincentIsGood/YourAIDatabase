@@ -9,6 +9,20 @@ Then, install project dependencies with
 pip install -r requirements.txt
 ```
 
+Setup configuration in [`configs/common.py`](configs/common.py):
+```py
+# By default, llama2 is used. Hence the following is required and cannot be empty
+from . import llama2 as model_config
+
+LOCAL_FILES_ONLY = False
+HF_ACCESS_TOKEN = "hf_...."
+```
+
+If you want to use another model, create a new configuration (eg. [`configs/miniorca.py`](configs/miniorca.py)) and modify `configs/common.py` again.
+```py
+from . import miniorca as model_config
+```
+
 ### Web-Application
 A simple web application is made to make querying simpler.
 

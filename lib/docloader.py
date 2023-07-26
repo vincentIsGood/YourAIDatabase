@@ -12,7 +12,7 @@ from langchain.document_loaders import (
 )
 from langchain.text_splitter import CharacterTextSplitter
 
-import utils.FileUtils as FileUtils
+from .utils import FileUtils
 
 ## https://github.com/Unstructured-IO/unstructured#document-parsing
 ### Types
@@ -62,7 +62,7 @@ class Loaders:
         loader = loaderClassType(filePath, **loaderArgs)
         doc = loader.load()
 
-        print(doc)
+        # print(doc)
         self.loadedDocs.append(*self.textSplitter.split_documents(doc))
 
     def getDocs(self):

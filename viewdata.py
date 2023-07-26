@@ -3,7 +3,7 @@ from langchain.vectorstores import Chroma
 from langchain.embeddings.sentence_transformer import SentenceTransformerEmbeddings
 
 import configs.common as config
-import configs.llama2 as model_config
+from configs.common import model_config
 from lib.utils.InteractiveConsole import InteractiveConsole, SimpleCommandHandler
 
 cmdParser = argparse.ArgumentParser()

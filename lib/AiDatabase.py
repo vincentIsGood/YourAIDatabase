@@ -1,5 +1,4 @@
 import importlib
-import sys
 import torch
 import huggingface_hub
 from langchain import HuggingFacePipeline
@@ -12,8 +11,8 @@ import transformers
 from transformers import AutoModelForCausalLM, AutoTokenizer, TextStreamer, StoppingCriteria, StoppingCriteriaList
 
 import configs.common as config
-import configs.llama2 as model_config
-from .output_callbacks import StreamingCallbackHandler
+from configs.common import model_config
+# from .output_callbacks import StreamingCallbackHandler
 
 ### Types
 from typing import Callable
