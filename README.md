@@ -48,7 +48,7 @@ python3 adddata.py
 python3 viewdata.py
 ```
 
-3. `query.py` starts Querying the database!
+3. `query.py` to query the database!
 ```sh
 python3 query.py
 
