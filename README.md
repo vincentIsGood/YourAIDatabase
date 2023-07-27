@@ -23,6 +23,8 @@ If you want to use another model, create a new configuration (eg. [`configs/mini
 from . import miniorca as model_config
 ```
 
+Manually modifying source code MAY be needed, if you want granular control of the application.
+
 ### Web-Application
 A simple web application is made to make uploading and querying simpler.
 
@@ -34,8 +36,6 @@ python3 flask_main.py
 Then, head to [http://127.0.0.1:5022/app/](http://127.0.0.1:5022/app/)
 
 ### Command line
-Manually modifying source code MAY be needed. (in the `configs/` folder)
-
 Steps to add and query documents:
 
 1. `adddata.py` will automatically import `docs/*` files into Chroma db. And it is not recommended to put the same file into `docs/` directory because it will be reimported.
