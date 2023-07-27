@@ -89,6 +89,10 @@ def index():
 def appFiles(path):
     return send_from_directory("public", path)
 
+@app.route("/app/docs/<path:path>")
+def serveImportedDocs(path):
+    return send_from_directory("docs/imported", path)
+
 @app.route("/aidb/upload", methods=["POST"])
 def uploadDocument():
     filename = request.args.get("name")
@@ -105,6 +109,7 @@ def uploadDocument():
     loadedDocs = adddata.loadData()
     if len(loadedDocs) == 0:
         return Response(status=204)
+    
     aiDatabase.addDocsToDb(loadedDocs)
     return Response(status=201)
 

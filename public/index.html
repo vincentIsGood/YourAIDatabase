@@ -79,9 +79,10 @@
                 return contentElement;
             }
             function createSource(source){
-                const sourceDiv = document.createElement("div");
+                const sourceDiv = document.createElement("a");
                 sourceDiv.classList.add("source");
                 sourceDiv.textContent = source;
+                sourceDiv.href = source;
                 document.querySelector(".sources").appendChild(sourceDiv);
             }
 

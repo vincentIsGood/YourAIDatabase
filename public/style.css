@@ -29,6 +29,9 @@ svg{
 svg path{
     fill: var(--text-color);
 }
+a{
+    text-decoration: none;
+}
 .display-none{
     display: none;
 }
@@ -51,7 +54,7 @@ svg path{
     grid-template-columns: 100%;
     justify-content: center;
 }
-.chat-window > div, .upload-wrapper > div{
+.chat-window > *, .upload-wrapper > *{
     margin: 1rem;
     background-color: var(--bg-color-3);
     border-radius: 1rem;
@@ -168,7 +171,7 @@ button#stop{
     gap: 1rem;
     overflow-y: auto;
 }
-.sources > div{
+.sources > .source{
     width: min-content;
     height: min-content;
     padding: 0.4rem 2rem;
@@ -177,6 +180,6 @@ button#stop{
     color: var(--text-contrast-color);
     white-space: pre;
 }
-.sources > div:hover{
+.sources > .source:hover{
     filter: brightness(80%);
 }
