@@ -2,10 +2,10 @@ from langchain.embeddings.sentence_transformer import SentenceTransformerEmbeddi
 from langchain.callbacks.streaming_stdout import StreamingStdOutCallbackHandler
 
 from lib.utils.InteractiveConsole import InteractiveConsole, SimpleCommandHandler
-from lib.AiDatabase import AiDatabaseQuerier
+from lib.AiDatabase import AiDatabase
 
 def main():
-    aiDatabaseQuerier = AiDatabaseQuerier([StreamingStdOutCallbackHandler()])
+    aiDatabaseQuerier = AiDatabase([StreamingStdOutCallbackHandler()])
 
     def query(args):
         aiDatabaseQuerier.query(input("[*] Type in your query: "))

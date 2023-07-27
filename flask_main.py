@@ -1,7 +1,10 @@
 """
 Only 1 job can run at a time, since we have 1 LLM loaded in memory only.
+
+TODO: organize this pile of * please.
 """
 
+import os
 import random
 import string
 import json
@@ -9,20 +12,24 @@ import threading
 import asyncio
 from transformers.models.auto import AutoTokenizer
 from websockets.server import WebSocketServerProtocol, serve
-from flask import Flask, request, send_from_directory
+from flask import Flask, request, send_from_directory, Response
 from flask_cors import CORS
 from markupsafe import escape, Markup
 from transformers import TextStreamer
 
-from lib.AiDatabase import AiDatabaseQuerier
+import configs.common as config
+import adddata
+from lib.AiDatabase import AiDatabase
 from lib.utils.async_utils import run_async
 
 FLASK_PORT = 5022
 WEBSOCKET_PORT = 5023
+UPLOAD_FOLDER = config.DOCS_DIRECTORY
 
 app = Flask(__name__, template_folder="public", static_folder="public")
 app.config['SECRET_KEY'] = "asdasdwefdgdfcvbnm,nadsjkh"
 app.config['TEMPLATES_AUTO_RELOAD'] = True
+app.config["UPLOAD_FOLDER"] = UPLOAD_FOLDER
 cors = CORS(app)
 currentJob = None
 queryJob = None
@@ -60,7 +67,7 @@ def stopping_criteria(input_ids, score, **kwargs) -> bool:
 
 async def queryAndSendSources(query: str):
     global mainWebSocket, currentJob, stopGeneration
-    sources = aiDatabaseQuerier.query(Markup(query).unescape())
+    sources = aiDatabase.query(Markup(query).unescape())
 
     ## After AI response, send sources and reset
     if mainWebSocket:
@@ -72,15 +79,34 @@ async def queryAndSendSources(query: str):
     currentJob = None
     stopGeneration = False
 
-aiDatabaseQuerier = AiDatabaseQuerier([], WsTextStreamer, [stopping_criteria])
+aiDatabase = AiDatabase([], WsTextStreamer, [stopping_criteria])
 
-@app.route('/app/')
+@app.route("/app/")
 def index():
     return send_from_directory("public", "index.html")
 
-@app.route('/app/<path:path>')
+@app.route("/app/<path:path>")
 def appFiles(path):
     return send_from_directory("public", path)
+
+@app.route("/aidb/upload", methods=["POST"])
+def uploadDocument():
+    filename = request.args.get("name")
+    if not request.data or filename == "" or ".." in filename:
+        return Response(status=400)
+    
+    outFilePath = os.path.join(app.config["UPLOAD_FOLDER"], filename)
+    if os.path.exists(outFilePath):
+        return Response(status=204)
+
+    with open(outFilePath, "wb+") as f:
+        f.write(request.data)
+
+    loadedDocs = adddata.loadData()
+    if len(loadedDocs) == 0:
+        return Response(status=204)
+    aiDatabase.addDocsToDb(loadedDocs)
+    return Response(status=201)
 
 @app.route("/aidb", methods=["GET"])
 def handleDatabaseQuery():

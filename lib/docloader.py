@@ -38,7 +38,7 @@ SUPPORTED_LOADERS: 'dict[str, Tuple[Type[BaseLoader], object]]' = {
     "html": (UnstructuredHTMLLoader, {}),
 }
 
-class Loaders:
+class LocalFileLoader:
     def __init__(self, encoding = None):
         self.encoding = encoding
         self.loadedDocs: 'List[Document]' = []
@@ -52,8 +52,10 @@ class Loaders:
         if ext in SUPPORTED_LOADERS:
             loaderClassType, loaderArgs = SUPPORTED_LOADERS[FileUtils.fileExt(filePath)]
         else: 
-            print("[!] Cannot find loader for file '%s'. Using default loader." % filePath)
-            loaderClassType, loaderArgs = DEFAULT_LOADER
+            print("[!] Cannot find loader for file '%s'. Ignoring it" % filePath)
+            return
+            # print("[!] Cannot find loader for file '%s'. Using default loader." % filePath)
+            # loaderClassType, loaderArgs = DEFAULT_LOADER
         
         # TextLoader(pathToTxt, encoding=self.encoding)
         if "encoding" in loaderArgs:

@@ -21,7 +21,7 @@ from langchain.vectorstores.base import VectorStoreRetriever
 from langchain.schema import BaseLanguageModel, Document
 ###
 
-class AiDatabaseQuerier:
+class AiDatabase:
     def __init__(self, callbacks: 'list[BaseCallbackHandler]' = [], 
                  streamerClassType: 'type[TextStreamer]' = TextStreamer,
                  stoppingCriteriaList: 'list[Callable | StoppingCriteria]' = []):
@@ -47,6 +47,9 @@ class AiDatabaseQuerier:
         # print(res["result"])
         # for source in res["source_documents"]:
         #     print(source.metadata)
+    
+    def addDocsToDb(self, docs: 'list[Document]'):
+        self.chromadb.add_documents(docs)
 
 def createLLM(callbacks: 'list[BaseCallbackHandler]', 
               streamerClassType: 'type[TextStreamer]' = TextStreamer, 
