@@ -24,7 +24,7 @@ from . import miniorca as model_config
 ```
 
 ### Web-Application
-A simple web application is made to make querying simpler.
+A simple web application is made to make uploading and querying simpler.
 
 To run it, make sure `flask` is installed by doing `pip install Flask`
 ```sh
