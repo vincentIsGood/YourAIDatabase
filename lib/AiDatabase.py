@@ -105,7 +105,6 @@ def createCLLM(callbacks: 'list[BaseCallbackHandler]' = [StreamingStdOutCallback
     """
     print("[+] Loading C LLM model")
     if not os.path.exists(model_config.LLM_MODEL):
-        ## TODO: allow users to specify which specific "model.bin" to download. use allow_patterns="asd.bin" 
         llmModelFolder = downloadOneModelFile(
             model_config.LLM_MODEL, 
             specificModelBinPattern=None if not hasattr(model_config, "LLM_MODEL_BIN_FILE") else model_config.LLM_MODEL_BIN_FILE)
