@@ -1,4 +1,6 @@
+# Private
 0_*
+*.private*
 
 # Base
 __pycache__
@@ -8,8 +10,6 @@ docs/**
 !docs/EmployeeSituation.txt
 
 models/**
-
-configs/**
 
 ## Webapp (not yet ready)
 # flask_main.py

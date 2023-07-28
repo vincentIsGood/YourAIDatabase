@@ -4,18 +4,18 @@ import shutil
 
 import configs.common as config
 from configs.common import model_config
-from lib.DocLoader import LocalFileLoader
-import lib.utils.FileUtils as FileUtils
+from lib.DocLoader import LocalFileLoader, WebFileLoader
+import lib.utils.file_utils as file_utils
 
 def loadData():
-    loader = LocalFileLoader("utf-8")
+    loader = LocalFileLoader()
 
     importedDir = config.DOCS_DIRECTORY + "/imported"
     if not os.path.isdir(importedDir):
         os.mkdir(importedDir, mode=755)
 
     for file in os.listdir(config.DOCS_DIRECTORY):
-        if FileUtils.filenameNoExt(file).endswith("_ignore"):
+        if file_utils.filenameNoExt(file).endswith("_ignore"):
             continue
 
         docFilename = config.DOCS_DIRECTORY + "/" + file
@@ -26,6 +26,13 @@ def loadData():
         loader.loadDoc(docFilename)
         shutil.move(docFilename, importedDir)
 
+    return loader.getDocs()
+
+def loadWebData(urls: 'list[str]'):
+    loader = WebFileLoader()
+    for url in urls:
+        loader.loadWebDoc(url)
+    loader.cleanupTmp()
     return loader.getDocs()
 
 if __name__ == "__main__":

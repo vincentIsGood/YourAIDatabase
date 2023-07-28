@@ -1,3 +1,5 @@
+import traceback
+import sys
 # from types import FunctionType
 from typing import Callable
 
@@ -77,6 +79,7 @@ class InteractiveConsole:
                 break
             except Exception as e:
                 print("[-] Error encountered: %s" % str(e))
+                traceback.print_exception(*sys.exc_info())
 
 ### Default Handlers
 class HelpCommandHandler(CommandHandler):

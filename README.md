@@ -60,6 +60,25 @@ python3 query.py
 (cmd)> reload_qa
 ```
 
+## Workaround with `ctransformers` using `CUDA`
+I had to specify the following in the program in order to use `CUDA` with `ctransformers`.
+```py
+# Exclude the extension of the library (eg. dll, so)
+# Example:
+LLM(
+    ...
+    lib=r"...\Python39\Lib\site-packages\ctransformers\lib\cuda\ctransformers",
+    ...
+)
+```
+
+To simplify the process (modify `configs/common.py`):
+```py
+# Download instructions: https://github.com/marella/ctransformers#cuda
+# If `pip install` doesn't work, try to simply copy `.../lib/cuda/ctransformers.dll` into the corresponding location
+CTRANSFORMERS_CUDA_LIB = r"...\Python39\Lib\site-packages\ctransformers\lib\cuda\ctransformers"
+```
+
 ## Notes
 Used: Chromadb, LangChain, HuggingFace, Flask
 

@@ -3,6 +3,10 @@
 
 SENTENCE_EMBEDDING_MODEL = "all-MiniLM-L6-v2"
 LLM_MODEL = "psmathur/orca_mini_v2_7b"
+IS_GGML = False
+
+IS_LLM_LOCAL = False
+IS_TOKENIZER_LOCAL = False
 
 PROMPT_TEMPLATE = """
 ### System:

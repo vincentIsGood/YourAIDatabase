@@ -150,6 +150,8 @@
                 const queryButton = document.querySelector("#query");
                 queryButton.addEventListener("click", ()=>{
                     queryAiDatabase(userInputField.value);
+                    userInputField.value = "";
+                    queryButton.classList.add("display-none");
                 });
                 
                 const stopButton = document.querySelector("#stop");

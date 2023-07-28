@@ -1,8 +1,17 @@
-from . import llama2 as model_config
+from . import llama2_ggml as model_config
+from .utils.module_utils import getCTransformersCudaLib_Windows
 
-# cpu, cuda, mps
+### Basic Config
+## cpu, cuda, mps
 DEVICE = "cpu"
+CTRANSFORMERS_CUDA_LIB = None
+# DEVICE = "cuda"
+# CTRANSFORMERS_CUDA_LIB = getCTransformersCudaLib_Windows()
+
 SKIP_PROMPT = True
+
+### WebApp Config
+WEB_UPLOAD_SECRET = "asldjhukdhuiddygkjdrhg"
 
 ### Storage Config
 PERSIST_DIRECTORY = "./chroma_db"
@@ -10,7 +19,6 @@ CACHE_DIR = "./models"
 DOCS_DIRECTORY = "./docs"
 
 ### Model Config
-LOCAL_FILES_ONLY = True
 HF_ACCESS_TOKEN = ""
 
 ### Query Config

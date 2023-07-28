@@ -13,7 +13,7 @@ from langchain.document_loaders import (
 )
 from langchain.text_splitter import CharacterTextSplitter
 
-from .utils import FileUtils
+from .utils import file_utils
 
 ## https://github.com/Unstructured-IO/unstructured#document-parsing
 ### Types
@@ -40,7 +40,7 @@ SUPPORTED_LOADERS: 'dict[str, Tuple[Type[BaseLoader], object]]' = {
 }
 
 class LocalFileLoader:
-    def __init__(self, encoding = None):
+    def __init__(self, encoding = "utf-8"):
         self.encoding = encoding
         self.loadedDocs: 'List[Document]' = []
         self.textSplitter = CharacterTextSplitter(
@@ -48,9 +48,9 @@ class LocalFileLoader:
             chunk_overlap=0)
 
     def loadDoc(self, filePath, source = None):
-        ext = FileUtils.fileExt(filePath)
+        ext = file_utils.fileExt(filePath)
         if ext in SUPPORTED_LOADERS:
-            loaderClassType, loaderArgs = SUPPORTED_LOADERS[FileUtils.fileExt(filePath)]
+            loaderClassType, loaderArgs = SUPPORTED_LOADERS[file_utils.fileExt(filePath)]
         else: 
             print("[!] Cannot find loader for file '%s'. Ignoring it" % filePath)
             return
@@ -95,18 +95,22 @@ class WebFileLoader(LocalFileLoader):
         
     def loadWebDoc(self, url):
         print("[+] Trying to download doc: ", url)
-        res = requests.get(url)
-        baseFilename = os.path.basename(res.url)
-        if baseFilename == "":
-            baseFilename = randomString()
-        if not "." in baseFilename:
-            baseFilename + mimetypes.guess_extension(res.headers.get("content-type"))
-        outFilename = self.tmpDir + "/" + baseFilename
-        print("[+] Saving doc to ", outFilename)
-        with open(outFilename, "wb+") as f:
-            f.write(res.content)
-        
-        return self.loadDoc(outFilename, res.url)
+        try:
+            res = requests.get(url)
+            baseFilename = os.path.basename(res.url)
+            if baseFilename == "":
+                baseFilename = randomString()
+            if not "." in baseFilename:
+                baseFilename + mimetypes.guess_extension(res.headers.get("content-type"))
+            
+            outFilename = self.tmpDir + "/" + baseFilename
+            print("[+] Saving doc to ", outFilename)
+            with open(outFilename, "wb+") as f:
+                f.write(res.content)
+            
+            self.loadDoc(outFilename, res.url)
+        except Exception:
+            print("[-] Cannot add document")
 
     def cleanupTmp(self):
         print("[+] Removing tmp directory: ", self.tmpDir)

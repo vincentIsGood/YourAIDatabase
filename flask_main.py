@@ -4,11 +4,16 @@ Only 1 job can run at a time, since we have 1 LLM loaded in memory only.
 TODO: organize this pile of * please.
 """
 
+import sys
 import os
 import json
 import threading
 import asyncio
+from typing import Any, Optional
+from uuid import UUID
+from langchain.schema.output import LLMResult
 from transformers.models.auto import AutoTokenizer
+from langchain.callbacks.base import BaseCallbackHandler
 from websockets.server import WebSocketServerProtocol, serve
 from flask import Flask, request, send_from_directory, Response
 from flask_cors import CORS
@@ -18,6 +23,7 @@ from transformers import TextStreamer
 import configs.common as config
 import adddata
 from lib.AiDatabase import AiDatabase
+from lib.utils.url_utils import isUriValid
 from lib.utils.async_utils import run_async
 from lib.utils.randutils import randomString
 
@@ -29,13 +35,15 @@ app = Flask(__name__, template_folder="public", static_folder="public")
 app.config['SECRET_KEY'] = "asdasdwefdgdfcvbnm,nadsjkh"
 app.config['TEMPLATES_AUTO_RELOAD'] = True
 app.config["UPLOAD_FOLDER"] = UPLOAD_FOLDER
+app.config["WEB_UPLOAD_SECRET"] = config.WEB_UPLOAD_SECRET
 cors = CORS(app)
 currentJob = None
 queryJob = None
 mainWebSocket = None
-stopGeneration = False
 
 class WsTextStreamer(TextStreamer):
+    """For transformers / HuggingFace LLM
+    """
     def __init__(self, tokenizer: AutoTokenizer, skip_prompt: bool = False, **decode_kwargs):
         super().__init__(tokenizer, skip_prompt, **decode_kwargs)
         self.buffer: 'list[str]' = []
@@ -51,21 +59,39 @@ class WsTextStreamer(TextStreamer):
                     self.buffer = []
                 return
             
-            if stream_end:
-                await mainWebSocket.send(text)
-                return
-            
             if len(self.buffer) > 0:
                 await mainWebSocket.send(self.buffer)
                 self.buffer = []
             await mainWebSocket.send(text)
         run_async(wrapper)
 
-def stopping_criteria(input_ids, score, **kwargs) -> bool:
-    return stopGeneration
+class StreamingCallbackHandler(BaseCallbackHandler):
+    """For LangChain / CTransformers LLM
+    """
+    buffer: 'list[str]' = []
+
+    def on_llm_new_token(self, token: str, **kwargs) -> None:
+        sys.stdout.write(token)
+        sys.stdout.flush()
+        async def wrapper():
+            if not mainWebSocket:
+                self.buffer.append(token)
+                return
+            
+            if len(self.buffer) > 0:
+                await mainWebSocket.send(self.buffer)
+                self.buffer = []
+            await mainWebSocket.send(token)
+        run_async(wrapper)
+    
+    def on_llm_end(self, 
+                   response: LLMResult, *, 
+                   run_id: UUID, parent_run_id: 'UUID | None' = None, 
+                   **kwargs: Any) -> Any:
+        self.buffer = []
 
 async def queryAndSendSources(query: str):
-    global mainWebSocket, currentJob, stopGeneration
+    global mainWebSocket, currentJob
     sources = aiDatabase.query(Markup(query).unescape())
 
     ## After AI response, send sources and reset
@@ -76,9 +102,8 @@ async def queryAndSendSources(query: str):
         await mainWebSocket.send("[[[END]]]")
         mainWebSocket = None
     currentJob = None
-    stopGeneration = False
 
-aiDatabase = AiDatabase([], WsTextStreamer, [stopping_criteria])
+aiDatabase = AiDatabase([StreamingCallbackHandler()], WsTextStreamer)
 
 @app.route("/app/")
 def index():
@@ -92,6 +117,18 @@ def appFiles(path):
 def serveImportedDocs(path):
     return send_from_directory("docs/imported", path)
 
+@app.route("/aidb/urlupload", methods=["POST"])
+def uploadDocUrl():
+    if not isUriValid(request.data):
+        return Response(status=400)
+    
+    loadedDocs = adddata.loadWebData([request.data])
+    if len(loadedDocs) == 0:
+        return Response(status=204)
+    
+    aiDatabase.addDocsToDb(loadedDocs)
+    return Response(status=201)
+
 @app.route("/aidb/upload", methods=["POST"])
 def uploadDocument():
     filename = request.args.get("name")
@@ -101,10 +138,10 @@ def uploadDocument():
     outFilePath = os.path.join(app.config["UPLOAD_FOLDER"], filename)
     if os.path.exists(outFilePath):
         return Response(status=204)
-
+    
     with open(outFilePath, "wb+") as f:
         f.write(request.data)
-
+    
     loadedDocs = adddata.loadData()
     if len(loadedDocs) == 0:
         return Response(status=204)
@@ -126,8 +163,7 @@ def handleDatabaseQuery():
 @app.route("/aidb", methods=["DELETE"])
 def stopGenHandler():
     if currentJob == request.args.get("id"):
-        global stopGeneration
-        stopGeneration = True
+        aiDatabase.stopLLM()
     return ""
 
 async def wsHandler(websocket: WebSocketServerProtocol):

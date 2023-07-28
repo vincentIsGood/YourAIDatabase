@@ -2,11 +2,16 @@
 # https://huggingface.co/sentence-transformers
 
 SENTENCE_EMBEDDING_MODEL = "all-MiniLM-L6-v2"
-LLM_MODEL = "meta-llama/Llama-2-7b-chat-hf"
-IS_GGML = False
+LLM_MODEL = "TheBloke/Llama-2-7B-Chat-GGML"
+IS_GGML = True
 
-IS_LLM_LOCAL = True
-IS_TOKENIZER_LOCAL = True
+## Manually download (LLM_MODEL_TYPE can be found in 'config.json')
+# LLM_MODEL_TYPE = "llama"
+# LLM_MODEL = "/path/to/ggml-gpt-2.bin"
+## OR
+# LLM_MODEL = "/path/to/ggml-gpt-2/folder"  # contains 'config.json' & 'model.bin'
+
+IS_LLM_LOCAL = False
 
 # https://huggingface.co/TheBloke/Llama-2-13B-chat-GPTQ/discussions/5
 PROMPT_TEMPLATE = """
