@@ -5,8 +5,6 @@ TODO: organize this pile of * please.
 """
 
 import os
-import random
-import string
 import json
 import threading
 import asyncio
@@ -21,6 +19,7 @@ import configs.common as config
 import adddata
 from lib.AiDatabase import AiDatabase
 from lib.utils.async_utils import run_async
+from lib.utils.randutils import randomString
 
 FLASK_PORT = 5022
 WEBSOCKET_PORT = 5023
@@ -120,7 +119,7 @@ def handleDatabaseQuery():
     if query and not currentJob:
         queryJob = threading.Thread(target=lambda: asyncio.run(queryAndSendSources(query)), daemon=True)
         queryJob.start()
-        currentJob = ''.join([random.choice(string.ascii_letters) for _ in range(10)])
+        currentJob = randomString(10)
         return currentJob
     return ""
 

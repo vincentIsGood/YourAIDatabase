@@ -1,3 +1,4 @@
+import os
 from typing import List, Type, Tuple
 from langchain.document_loaders import (
     TextLoader, 
@@ -44,10 +45,9 @@ class LocalFileLoader:
         self.loadedDocs: 'List[Document]' = []
         self.textSplitter = CharacterTextSplitter(
             chunk_size=4000, 
-            chunk_overlap=0
-        )
+            chunk_overlap=0)
 
-    def loadDoc(self, filePath):
+    def loadDoc(self, filePath, source = None):
         ext = FileUtils.fileExt(filePath)
         if ext in SUPPORTED_LOADERS:
             loaderClassType, loaderArgs = SUPPORTED_LOADERS[FileUtils.fileExt(filePath)]
@@ -62,10 +62,52 @@ class LocalFileLoader:
             loaderArgs["encoding"] = self.encoding
         
         loader = loaderClassType(filePath, **loaderArgs)
-        doc = loader.load()
+        docs = loader.load()
+
+        if source:
+            for doc in docs:
+                doc.metadata = {"source": source}
 
         # print(doc)
-        self.loadedDocs.append(*self.textSplitter.split_documents(doc))
+        for doc in self.textSplitter.split_documents(docs):
+            self.loadedDocs.append(doc)
 
     def getDocs(self):
         return self.loadedDocs
+
+
+import shutil
+import mimetypes
+import requests
+from .utils.randutils import randomString
+
+class WebFileLoader(LocalFileLoader):
+    """
+    from lib.DocLoader import WebFileLoader
+    loader = WebFileLoader()
+    loader.loadWebDoc("https://docs.python.org/3/library/mimetypes.html")
+    """
+    def __init__(self, tmpFolder = "./tmp"):
+        super().__init__("utf-8")
+        self.tmpDir = tmpFolder
+        if not os.path.exists(tmpFolder):
+            os.mkdir(tmpFolder, mode=755)
+        
+    def loadWebDoc(self, url):
+        print("[+] Trying to download doc: ", url)
+        res = requests.get(url)
+        baseFilename = os.path.basename(res.url)
+        if baseFilename == "":
+            baseFilename = randomString()
+        if not "." in baseFilename:
+            baseFilename + mimetypes.guess_extension(res.headers.get("content-type"))
+        outFilename = self.tmpDir + "/" + baseFilename
+        print("[+] Saving doc to ", outFilename)
+        with open(outFilename, "wb+") as f:
+            f.write(res.content)
+        
+        return self.loadDoc(outFilename, res.url)
+
+    def cleanupTmp(self):
+        print("[+] Removing tmp directory: ", self.tmpDir)
+        shutil.rmtree(self.tmpDir)
