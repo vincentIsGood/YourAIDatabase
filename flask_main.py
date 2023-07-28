@@ -9,7 +9,7 @@ import os
 import json
 import threading
 import asyncio
-from typing import Any, Optional
+from typing import Any, Dict, List, Optional
 from uuid import UUID
 from langchain.schema.output import LLMResult
 from transformers.models.auto import AutoTokenizer
@@ -69,6 +69,18 @@ class StreamingCallbackHandler(BaseCallbackHandler):
     """For LangChain / CTransformers LLM
     """
     buffer: 'list[str]' = []
+
+    def on_llm_start(self, 
+                     serialized: Dict[str, Any], 
+                     prompts: List[str], *, 
+                     run_id: UUID, 
+                     parent_run_id: 'UUID | None' = None, 
+                     tags: 'List[str] | None' = None, 
+                     metadata: 'Dict[str, Any] | None' = None, 
+                     **kwargs: Any) -> Any:
+        for prompt in prompts:
+            print(prompt)
+        pass
 
     def on_llm_new_token(self, token: str, **kwargs) -> None:
         sys.stdout.write(token)

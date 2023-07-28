@@ -1,15 +1,32 @@
+import sys
 import threading
 from typing import Any
 from langchain.embeddings.sentence_transformer import SentenceTransformerEmbeddings
-from langchain.callbacks.streaming_stdout import StreamingStdOutCallbackHandler
+from langchain.callbacks.streaming_stdout import BaseCallbackHandler
 
 from lib.utils.InteractiveConsole import InteractiveConsole, SimpleCommandHandler
 from lib.AiDatabase import AiDatabase
 
 queryJob = None
 
+class StreamingCallbackHandler(BaseCallbackHandler):
+    def on_llm_start(self, 
+                     serialized, 
+                     prompts, *, 
+                     run_id, 
+                     parent_run_id = None, 
+                     tags = None, 
+                     metadata = None, 
+                     **kwargs) -> Any:
+        for prompt in prompts:
+            print(prompt)
+
+    def on_llm_new_token(self, token: str, **kwargs) -> None:
+        sys.stdout.write(token)
+        sys.stdout.flush()
+
 def main():
-    aiDatabaseQuerier = AiDatabase([StreamingStdOutCallbackHandler()])
+    aiDatabaseQuerier = AiDatabase([StreamingCallbackHandler()])
 
     def query(args):
         global queryJob

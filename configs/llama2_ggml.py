@@ -2,7 +2,8 @@
 # https://huggingface.co/sentence-transformers
 
 SENTENCE_EMBEDDING_MODEL = "all-MiniLM-L6-v2"
-LLM_MODEL = "TheBloke/Llama-2-7B-Chat-GGML"
+LLM_MODEL = "TheBloke/Llama-2-13B-chat-GGML"
+LLM_MODEL_BIN_FILE = "llama-2-13b-chat.ggmlv3.q3_K_S.bin"
 IS_GGML = True
 
 ## Manually download (LLM_MODEL_TYPE can be found in 'config.json')
@@ -13,19 +14,20 @@ IS_GGML = True
 
 IS_LLM_LOCAL = False
 
-# https://huggingface.co/TheBloke/Llama-2-13B-chat-GPTQ/discussions/5
 PROMPT_TEMPLATE = """
-<s>
-[INST]
-<<SYS>>
+### SYSTEM: 
 If you don't know the answer, just say that you don't know. You must provide a concise answer.
-<</SYS>>
 
-Use the following pieces of information to answer the question.
-[/INST] 
-Information: 
+### USER: 
+Use the following pieces of info to answer the last question:
+
+Info starts here:
+
 {context}
-</s>
 
-<s> [INST] {question} [/INST] 
-""".strip() + "\n\n"
+Info ends here.
+
+Last question: {question}
+
+### ASSISTANT: 
+""".strip() + "\n"

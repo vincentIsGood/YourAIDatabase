@@ -105,7 +105,10 @@ def createCLLM(callbacks: 'list[BaseCallbackHandler]' = [StreamingStdOutCallback
     """
     print("[+] Loading C LLM model")
     if not os.path.exists(model_config.LLM_MODEL):
-        llmModelFolder = downloadOneModelFile(model_config.LLM_MODEL)
+        ## TODO: allow users to specify which specific "model.bin" to download. use allow_patterns="asd.bin" 
+        llmModelFolder = downloadOneModelFile(
+            model_config.LLM_MODEL, 
+            specificModelBinPattern=None if not hasattr(model_config, "LLM_MODEL_BIN_FILE") else model_config.LLM_MODEL_BIN_FILE)
         llmModelFolder = os.path.normpath(llmModelFolder)
 
     lib = None
@@ -125,21 +128,26 @@ def createCLLM(callbacks: 'list[BaseCallbackHandler]' = [StreamingStdOutCallback
         }
     )
 
-def downloadOneModelFile(repoId = "", modelFileExt = ".bin"):
+def downloadOneModelFile(repoId, specificModelBinPattern = None, modelFileExt = ".bin"):
     """
+    specificModelBinPattern: allows wildcard like "*.bin"
     Returns: Local folder path of repo snapshot
     """
     from huggingface_hub import snapshot_download, HfApi
-    api = HfApi()
-    repo_info = api.repo_info(repo_id=repoId, files_metadata=True)
-    files = [
-        (f.size, f.rfilename)
-        for f in repo_info.siblings
-        if f.rfilename.endswith(modelFileExt)
-    ]
-    if not files:
-        raise ValueError(f"No model file found in repo '{repoId}'")
-    filename = min(files)[1]
+
+    if not specificModelBinPattern:
+        api = HfApi()
+        repo_info = api.repo_info(repo_id=repoId, files_metadata=True)
+        files = [
+            (f.size, f.rfilename)
+            for f in repo_info.siblings
+            if f.rfilename.endswith(modelFileExt)
+        ]
+        if not files:
+            raise ValueError(f"No model file found in repo '{repoId}'")
+        filename = min(files)[1]
+    else:
+        filename = specificModelBinPattern
 
     return snapshot_download(
         repo_id=repoId,
