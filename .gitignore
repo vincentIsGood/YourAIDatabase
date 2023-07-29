@@ -1,6 +1,7 @@
 # Private
 0_*
 *.private*
+*_private*
 
 # Base
 __pycache__

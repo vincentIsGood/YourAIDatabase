@@ -25,7 +25,7 @@ from . import miniorca as model_config
 
 Manually modifying source code MAY be needed, if you want granular control of the application.
 
-### Web-Application
+### Web-Application (Web UI)
 A simple web application is made to make uploading and querying simpler.
 
 To run it, make sure `flask` is installed by doing `pip install Flask`
