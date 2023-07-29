@@ -59,6 +59,19 @@ a{
     background-color: var(--bg-color-3);
     border-radius: 1rem;
 }
+@media screen and (max-width: 700px) {
+    .main-content{
+        flex-direction: column;
+        height: 200vh;
+    }
+    .upload-wrapper{
+        width: 100%;
+        order: 2;
+    }
+    .chat-window{
+        width: 100%;
+    }
+}
 
 .title{
     display: flex;
