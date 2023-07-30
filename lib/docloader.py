@@ -13,6 +13,7 @@ from langchain.document_loaders import (
 )
 from langchain.text_splitter import CharacterTextSplitter
 
+from .loaders import TextTrimmedLoader
 from .utils import file_utils
 
 ## https://github.com/Unstructured-IO/unstructured#document-parsing
@@ -23,7 +24,7 @@ from langchain.document_loaders.base import BaseLoader
 
 DEFAULT_LOADER: 'Tuple[Type[BaseLoader], object]' = (TextLoader, {"encoding": None})
 SUPPORTED_LOADERS: 'dict[str, Tuple[Type[BaseLoader], object]]' = {
-    "txt": (TextLoader, {"encoding": None}),
+    "txt": (TextTrimmedLoader, {"encoding": None}),
     "csv": (CSVLoader, {"encoding": None}),
 
     "xlsx": (UnstructuredExcelLoader, {}),
@@ -40,27 +41,34 @@ SUPPORTED_LOADERS: 'dict[str, Tuple[Type[BaseLoader], object]]' = {
 }
 
 class LocalFileLoader:
-    def __init__(self, encoding = "utf-8"):
+    def __init__(self, encoding = "utf-8", useDefaultLoader = False):
+        """
+            useDefaultLoader: use default loader if an unknown file extension is encountered
+        """
         self.encoding = encoding
+        self.useDefaultLoader = useDefaultLoader
         self.loadedDocs: 'List[Document]' = []
         self.textSplitter = CharacterTextSplitter(
             chunk_size=4000, 
             chunk_overlap=0)
 
     def loadDoc(self, filePath, source = None):
+        """source: If not None, overwrite the metadata "source" of docs with this value
+        """
         ext = file_utils.fileExt(filePath)
         if ext in SUPPORTED_LOADERS:
             loaderClassType, loaderArgs = SUPPORTED_LOADERS[file_utils.fileExt(filePath)]
         else: 
-            print("[!] Cannot find loader for file '%s'. Ignoring it" % filePath)
-            return
-            # print("[!] Cannot find loader for file '%s'. Using default loader." % filePath)
-            # loaderClassType, loaderArgs = DEFAULT_LOADER
+            if not self.useDefaultLoader:
+                print("[!] Cannot find loader for file '%s'. Ignoring it." % filePath)
+                return
+            print("[!] Cannot find loader for file '%s'. Using default loader." % filePath)
+            loaderClassType, loaderArgs = DEFAULT_LOADER
         
-        # TextLoader(pathToTxt, encoding=self.encoding)
         if "encoding" in loaderArgs:
             loaderArgs["encoding"] = self.encoding
         
+        # loader = TextLoader(pathToTxt, encoding=self.encoding)
         loader = loaderClassType(filePath, **loaderArgs)
         docs = loader.load()
 

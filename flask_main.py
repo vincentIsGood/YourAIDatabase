@@ -22,8 +22,8 @@ from transformers import TextStreamer
 
 import configs.common as config
 import adddata
+import lib.utils.url_utils as url_utils
 from lib.AiDatabase import AiDatabase
-from lib.utils.url_utils import isUriValid
 from lib.utils.async_utils import run_async
 from lib.utils.randutils import randomString
 
@@ -131,7 +131,7 @@ def serveImportedDocs(path):
 
 @app.route("/aidb/urlupload", methods=["POST"])
 def uploadDocUrl():
-    if not isUriValid(request.data):
+    if not url_utils.isUriValid(request.data):
         return Response(status=400)
     
     loadedDocs = adddata.loadWebData([request.data])
