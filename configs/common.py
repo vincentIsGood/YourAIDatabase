@@ -1,4 +1,4 @@
-from . import stablebeluga_private as model_config
+from . import llama2_ggml as model_config
 from .utils.module_utils import getCTransformersCudaLib_Windows
 
 ### Basic Config
