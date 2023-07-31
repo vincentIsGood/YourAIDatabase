@@ -162,9 +162,11 @@ function selectFileToUpload(){
 
     const inputFile = document.createElement("input");
     inputFile.type = "file";
-    inputFile.addEventListener("change", (e)=>{
-        const file = inputFile.files[0];
-        uploadFile(file);
+    inputFile.multiple = true;
+    inputFile.addEventListener("change", async (e)=>{
+        for(let file of inputFile.files){
+            await uploadFile(file);
+        }
     });
     inputFile.click();
     previousInputFile = inputFile;
