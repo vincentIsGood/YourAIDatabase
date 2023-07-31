@@ -7,12 +7,11 @@ import torch
 import transformers
 from langchain import HuggingFacePipeline
 from langchain.callbacks.base import BaseCallbackHandler
-from langchain.callbacks.manager import CallbackManagerForLLMRun, CallbackManager
+from langchain.callbacks.manager import CallbackManagerForLLMRun
 from langchain.callbacks.streaming_stdout import StreamingStdOutCallbackHandler
 from langchain.chains import RetrievalQA
 from langchain.embeddings.sentence_transformer import \
     SentenceTransformerEmbeddings
-from langchain.llms import CTransformers, LlamaCpp
 from langchain.prompts import PromptTemplate
 from langchain.schema import BaseLanguageModel, Document
 from langchain.vectorstores import Chroma
@@ -81,61 +80,6 @@ class AiDatabase:
         self.chromadb.add_documents(docs)
 
 
-class CancellableLLM(CTransformers):
-    stopRequested = False
-
-    def stopGen(self):
-        self.stopRequested = True
-    
-    def _call(
-            self, prompt: str, 
-            stop: 'Sequence[str] | None' = None, 
-            run_manager: 'CallbackManagerForLLMRun | None' = None, 
-            **kwargs: Any) -> str:
-        # Modified implementation of CTransformers._call
-        self.stopRequested = False
-        text = []
-        _run_manager = run_manager or CallbackManagerForLLMRun.get_noop_manager()
-        for chunk in self.client(prompt, stop=stop, stream=True):
-            if self.stopRequested:
-                return "".join(text)
-            text.append(chunk)
-            _run_manager.on_llm_new_token(chunk, verbose=self.verbose)
-        return "".join(text)
-    
-
-class CancellableLlamaCpp(LlamaCpp):
-    stopRequested = False
-
-    def stopGen(self):
-        self.stopRequested = True
-
-    def _call(
-        self,
-        prompt: str,
-        stop: 'Optional[List[str]]' = None,
-        run_manager: 'Optional[CallbackManagerForLLMRun]' = None,
-        **kwargs: Any,
-    ) -> str:
-        # Modified implementation of LlamaCpp._call
-        self.stopRequested = False
-        if self.streaming:
-            # If streaming is enabled, we use the stream
-            # method that yields as they are generated
-            # and return the combined strings from the first choices's text:
-            combined_text_output = ""
-            for token in self.stream(prompt=prompt, stop=stop, run_manager=run_manager):
-                if self.stopRequested:
-                    return combined_text_output
-                combined_text_output += token["choices"][0]["text"]
-            return combined_text_output
-        else:
-            params = self._get_parameters(stop)
-            params = {**params, **kwargs}
-            result = self.client(prompt=prompt, **params)
-            return result["choices"][0]["text"]
-
-
 def createCLLM(callbacks: 'list[BaseCallbackHandler]' = [StreamingStdOutCallbackHandler()]):
     """Create C/C++ based LLM (eg. w/ GGML)
     """
@@ -153,6 +97,7 @@ def createCLLM(callbacks: 'list[BaseCallbackHandler]' = [StreamingStdOutCallback
         gpu_layers = config.GPU_LAYERS
 
     if config.USE_LLAMACPP_INSTEAD_OF_CTRANSFORMERS:
+        from cancellablellm.llamacpp import CancellableLlamaCpp
         if not binFullPath:
             print("[-] A '.bin' filename is required, did you forget to specify 'LLM_MODEL_BIN_FILE' in model_config?")
         return CancellableLlamaCpp(
@@ -175,6 +120,7 @@ def createCLLM(callbacks: 'list[BaseCallbackHandler]' = [StreamingStdOutCallback
         print("[+] Use ctransformers lib: ", lib)
 
     # https://www.reddit.com/r/LocalLLaMA/comments/1343bgz/what_model_parameters_is_everyone_using/
+    from cancellablellm.ctransformers import CancellableLLM
     return CancellableLLM(
         streaming=True,
         model=llmModelFolder,
