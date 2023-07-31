@@ -3,15 +3,16 @@
 # set PYTHONUTF8=1  (useful on windows)
 # set CT_CUBLAS=1   (build ctransformers with CUDA enabled)
 # Ref: https://github.com/marella/ctransformers/blob/main/README.md#langchain
-ctransformers
+#ctransformers
 
 ## llama-cpp-python (with GPU, see https://python.langchain.com/docs/integrations/llms/llamacpp)
 # llama-cpp-python
 
 transformers
-langchain
+sentence_transformers
+langchain == 0.0.239
 langchain[llms]
-unstructured[local-inference]
+unstructured[local-inference] >= 0.8.1
 chromadb
 
 requests
