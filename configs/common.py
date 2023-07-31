@@ -8,8 +8,13 @@ CTRANSFORMERS_CUDA_LIB = None
 # DEVICE = "cuda"
 # CTRANSFORMERS_CUDA_LIB = getCTransformersCudaLib_Windows()
 
-# use how much GPU (if enabled)
-GPU_LAYERS = 50
+## GPU: LlamaCpp is faster and uses less memory.
+## CPU: ctransformers has a huge edge on memory. (13b model RAM: << 1GB)
+USE_LLAMACPP_INSTEAD_OF_CTRANSFORMERS = False
+
+# use how much GPU (if enabled); GPU_LAYERS = 20 (13b model: ~4GB. After query ~6GB)
+## ctransformers will get stuck waiting for more GPU, if value is too large
+GPU_LAYERS = 20
 
 SKIP_PROMPT = True
 

@@ -1,18 +1,18 @@
 import importlib
-from typing import Any, Callable, Optional, Sequence
-
 import os
+from typing import Any, List, Callable, Optional, Sequence
+
 import huggingface_hub
 import torch
 import transformers
 from langchain import HuggingFacePipeline
 from langchain.callbacks.base import BaseCallbackHandler
-from langchain.callbacks.manager import CallbackManagerForLLMRun
+from langchain.callbacks.manager import CallbackManagerForLLMRun, CallbackManager
 from langchain.callbacks.streaming_stdout import StreamingStdOutCallbackHandler
 from langchain.chains import RetrievalQA
 from langchain.embeddings.sentence_transformer import \
     SentenceTransformerEmbeddings
-from langchain.llms import CTransformers
+from langchain.llms import CTransformers, LlamaCpp
 from langchain.prompts import PromptTemplate
 from langchain.schema import BaseLanguageModel, Document
 from langchain.vectorstores import Chroma
@@ -22,6 +22,7 @@ from transformers import (AutoModelForCausalLM, AutoTokenizer,
 
 import configs.common as config
 from configs.common import model_config
+
 
 class AiDatabase:
     stopRequested = False
@@ -56,9 +57,12 @@ class AiDatabase:
     def query(self, queryStr: str) -> 'list[Document]':
         if queryStr == "": 
             return
-
+        
         self.stopRequested = False
+        import time
+        t = time.perf_counter()
         res = self.retrievalQA({"query": queryStr})
+        print("\n[*] Inference time elapsed: ", time.perf_counter() - t)
         return res["source_documents"]
         # print(res["result"])
         # for source in res["source_documents"]:
@@ -69,7 +73,7 @@ class AiDatabase:
 
     def stopLLM(self):
         if model_config.IS_GGML:
-            self.llm.stop()
+            self.llm.stopGen()
         else:
             self.stopRequested = True
 
@@ -80,7 +84,7 @@ class AiDatabase:
 class CancellableLLM(CTransformers):
     stopRequested = False
 
-    def stop(self):
+    def stopGen(self):
         self.stopRequested = True
     
     def _call(
@@ -100,21 +104,75 @@ class CancellableLLM(CTransformers):
         return "".join(text)
     
 
+class CancellableLlamaCpp(LlamaCpp):
+    stopRequested = False
+
+    def stopGen(self):
+        self.stopRequested = True
+
+    def _call(
+        self,
+        prompt: str,
+        stop: 'Optional[List[str]]' = None,
+        run_manager: 'Optional[CallbackManagerForLLMRun]' = None,
+        **kwargs: Any,
+    ) -> str:
+        # Modified implementation of LlamaCpp._call
+        self.stopRequested = False
+        if self.streaming:
+            # If streaming is enabled, we use the stream
+            # method that yields as they are generated
+            # and return the combined strings from the first choices's text:
+            combined_text_output = ""
+            for token in self.stream(prompt=prompt, stop=stop, run_manager=run_manager):
+                if self.stopRequested:
+                    return combined_text_output
+                combined_text_output += token["choices"][0]["text"]
+            return combined_text_output
+        else:
+            params = self._get_parameters(stop)
+            params = {**params, **kwargs}
+            result = self.client(prompt=prompt, **params)
+            return result["choices"][0]["text"]
+
+
 def createCLLM(callbacks: 'list[BaseCallbackHandler]' = [StreamingStdOutCallbackHandler()]):
     """Create C/C++ based LLM (eg. w/ GGML)
     """
     print("[+] Loading C LLM model")
+    binFullPath = None
     if not os.path.exists(model_config.LLM_MODEL):
-        llmModelFolder = downloadOneModelFile(
+        llmModelFolder, filename = downloadOneModelFile(
             model_config.LLM_MODEL, 
             specificModelBinPattern=None if not hasattr(model_config, "LLM_MODEL_BIN_FILE") else model_config.LLM_MODEL_BIN_FILE)
         llmModelFolder = os.path.normpath(llmModelFolder)
+        binFullPath = os.path.join(llmModelFolder, filename)
 
-    lib = None
     gpu_layers = 0
     if not config.DEVICE == "cpu":
-        lib = config.CTRANSFORMERS_CUDA_LIB
         gpu_layers = config.GPU_LAYERS
+
+    if config.USE_LLAMACPP_INSTEAD_OF_CTRANSFORMERS:
+        if not binFullPath:
+            print("[-] A '.bin' filename is required, did you forget to specify 'LLM_MODEL_BIN_FILE' in model_config?")
+        return CancellableLlamaCpp(
+            streaming=True,
+            verbose=False,
+            model_path=binFullPath,
+            callbacks=callbacks,
+
+            top_k=40,
+            top_p=0.1,
+            repeat_penalty=1.176,
+            temperature=0.7,
+            n_batch=512,
+            n_gpu_layers=gpu_layers
+        )
+
+    lib = None
+    if not config.DEVICE == "cpu":
+        lib = config.CTRANSFORMERS_CUDA_LIB
+        print("[+] Use ctransformers lib: ", lib)
 
     # https://www.reddit.com/r/LocalLLaMA/comments/1343bgz/what_model_parameters_is_everyone_using/
     return CancellableLLM(
@@ -138,7 +196,7 @@ def downloadOneModelFile(repoId, specificModelBinPattern = None, modelFileExt = 
     specificModelBinPattern: allows wildcard like "*.bin"
     Returns: Local folder path of repo snapshot
     """
-    from huggingface_hub import snapshot_download, HfApi
+    from huggingface_hub import HfApi, snapshot_download
 
     if not specificModelBinPattern:
         api = HfApi()
@@ -159,7 +217,7 @@ def downloadOneModelFile(repoId, specificModelBinPattern = None, modelFileExt = 
         local_files_only=model_config.IS_LLM_LOCAL,
         cache_dir=config.CACHE_DIR,
         allow_patterns=[filename, "config.json"],
-    )
+    ), filename
     
 
 def createLLM(callbacks: 'list[BaseCallbackHandler]' = [], 
