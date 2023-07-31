@@ -97,7 +97,7 @@ def createCLLM(callbacks: 'list[BaseCallbackHandler]' = [StreamingStdOutCallback
         gpu_layers = config.GPU_LAYERS
 
     if config.USE_LLAMACPP_INSTEAD_OF_CTRANSFORMERS:
-        from cancellablellm.llamacpp import CancellableLlamaCpp
+        from .cancellablellm.llamacpp import CancellableLlamaCpp
         if not binFullPath:
             print("[-] A '.bin' filename is required, did you forget to specify 'LLM_MODEL_BIN_FILE' in model_config?")
         return CancellableLlamaCpp(
@@ -120,7 +120,7 @@ def createCLLM(callbacks: 'list[BaseCallbackHandler]' = [StreamingStdOutCallback
         print("[+] Use ctransformers lib: ", lib)
 
     # https://www.reddit.com/r/LocalLLaMA/comments/1343bgz/what_model_parameters_is_everyone_using/
-    from cancellablellm.ctransformers import CancellableLLM
+    from .cancellablellm.ctransformers import CancellableLLM
     return CancellableLLM(
         streaming=True,
         model=llmModelFolder,
