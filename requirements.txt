@@ -8,6 +8,7 @@ ctransformers
 ## llama-cpp-python (with GPU, see https://python.langchain.com/docs/integrations/llms/llamacpp)
 # llama-cpp-python
 
+pydantic
 transformers
 sentence_transformers
 langchain == 0.0.239
