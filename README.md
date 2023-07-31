@@ -87,12 +87,12 @@ USE_LLAMACPP_INSTEAD_OF_CTRANSFORMERS = True
 ### `ctransformers` with `CUDA`
 Follow [official](https://github.com/marella/ctransformers#gpu) instructions:
 ```sh
-CT_CUBLAS=1 pip install ctransformers --no-binary ctransformers
+CT_CUBLAS=1 pip install ctransformers --upgrade --force-reinstall --no-binary ctransformers
 ```
 
 For MAC:
 ```sh
-CT_METAL=1 pip install ctransformers --no-binary ctransformers
+CT_METAL=1 pip install ctransformers --upgrade --force-reinstall --no-binary ctransformers
 ```
 
 <details>
