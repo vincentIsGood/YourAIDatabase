@@ -3,7 +3,7 @@
 # set PYTHONUTF8=1  (useful on windows)
 # set CT_CUBLAS=1   (build ctransformers with CUDA enabled)
 # Ref: https://github.com/marella/ctransformers/blob/main/README.md#langchain
-#ctransformers
+ctransformers
 
 ## llama-cpp-python (with GPU, see https://python.langchain.com/docs/integrations/llms/llamacpp)
 # llama-cpp-python
