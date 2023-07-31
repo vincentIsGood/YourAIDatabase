@@ -1,3 +1,4 @@
+
 let lock = false;
 let sources = new Set();
 let jobId = "";
@@ -15,7 +16,7 @@ function queryAiDatabase(query){
         jobId = res;
 
         const websocket = new WebSocket("ws://localhost:5023");
-        window.websocket = websocket;
+        // window.websocket = websocket;
 
         let assistantDiv = null;
         let currentMsgState = "";
@@ -28,7 +29,7 @@ function queryAiDatabase(query){
         websocket.addEventListener("message", (event)=>{
             switch(event.data){
                 case "[[[START]]]": 
-                    document.querySelector("#stop").classList.remove("display-none");
+                    document.querySelector("#stop")?.classList.remove("display-none");
                     currentMsgState = "response"; 
                 break;
                 case "[[[SOURCES]]]": 
@@ -52,7 +53,7 @@ function queryAiDatabase(query){
             }
         });
         websocket.addEventListener("close", (event)=>{
-            document.querySelector("#stop").classList.add("display-none");
+            document.querySelector("#stop")?.classList.add("display-none");
             lock = false;
         });
     });
@@ -70,7 +71,7 @@ function createChatMessageDiv(message, isUser = true){
     contentElement.classList.add("content");
     contentElement.textContent = message;
     divElement.appendChild(contentElement);
-    document.querySelector(".conversation").appendChild(divElement);
+    document.querySelector(".conversation")?.appendChild(divElement);
     return contentElement;
 }
 function createSource(source){
@@ -78,32 +79,56 @@ function createSource(source){
     sourceDiv.classList.add("source");
     sourceDiv.textContent = source;
     sourceDiv.href = source;
-    document.querySelector(".sources").appendChild(sourceDiv);
+    document.querySelector(".sources")?.appendChild(sourceDiv);
 }
 
+
 window.addEventListener("load", ()=>{
+    queryHandlers();
+    docUploadHandlers();
+});
+
+function queryHandlers(){
+    const userInputField = document.querySelector("#user-input");
+    const queryButton = document.querySelector("#query");
+    const stopButton = document.querySelector("#stop");
+
+    userInputField.addEventListener("keydown", (e)=>{
+        if(e.key == "Enter"){
+            queryAiDatabase(userInputField.value);
+            userInputField.value = "";
+            queryButton.classList.add("display-none");
+        }
+    });
+    userInputField.addEventListener("input", ()=>{
+        if(userInputField.value.length > 0)
+            queryButton.classList.remove("display-none");
+        else queryButton.classList.add("display-none");
+    });
+
+    queryButton.addEventListener("click", ()=>{
+        queryAiDatabase(userInputField.value);
+        userInputField.value = "";
+        queryButton.classList.add("display-none");
+    });
+    
+    stopButton.addEventListener("click", ()=>{
+        stopGeneration();
+    });
+}
+
+function docUploadHandlers(){
     const dragNDropUploadField = document.querySelector(".drag-n-drop");
     const dragNDropStatusMsg = document.querySelector(".drag-n-drop .status");
     const addIcon = document.querySelector(".add-icon");
     const uploadIcon = document.querySelector(".upload-icon");
+    
     dragNDropUploadField.addEventListener("drop", async (e)=>{
         e.preventDefault();
         for(let droppedItem of e.dataTransfer.items){
-            // Bad performance. But to keep stuff simple, I'll leave it.
             if(droppedItem.kind == "file"){
                 const file = droppedItem.getAsFile();
-                dragNDropStatusMsg.textContent = "Uploading...";
-                fetch("/aidb/upload?name=" + file.name, {
-                    method: "POST", 
-                    body: await file.arrayBuffer(),
-                    headers: {
-                        "content-type": file.type
-                    }
-                }).then(()=>{
-                    dragNDropStatusMsg.textContent = "Uploaded";
-                }).catch(()=>{
-                    dragNDropStatusMsg.textContent = "Error Encountered";
-                });
+                await uploadFile(file);
             }
         }
         setTimeout(()=>{
@@ -125,29 +150,42 @@ window.addEventListener("load", ()=>{
         dragNDropStatusMsg.textContent = "Drop files here";
     });
 
-    const userInputField = document.querySelector("#user-input");
-    userInputField.addEventListener("keydown", (e)=>{
-        if(e.key == "Enter"){
-            queryAiDatabase(userInputField.value);
-            userInputField.value = "";
-            queryButton.classList.add("display-none");
-        }
-    });
-    userInputField.addEventListener("input", ()=>{
-        if(userInputField.value.length > 0)
-            queryButton.classList.remove("display-none");
-        else queryButton.classList.add("display-none");
-    });
+    addIcon.addEventListener("click", selectFileToUpload);
+    uploadIcon.addEventListener("click", selectFileToUpload);
+}
 
-    const queryButton = document.querySelector("#query");
-    queryButton.addEventListener("click", ()=>{
-        queryAiDatabase(userInputField.value);
-        userInputField.value = "";
-        queryButton.classList.add("display-none");
+let previousInputFile = null;
+function selectFileToUpload(){
+    if(previousInputFile){
+        previousInputFile.remove();
+    }
+
+    const inputFile = document.createElement("input");
+    inputFile.type = "file";
+    inputFile.addEventListener("change", (e)=>{
+        const file = inputFile.files[0];
+        uploadFile(file);
     });
-    
-    const stopButton = document.querySelector("#stop");
-    stopButton.addEventListener("click", ()=>{
-        stopGeneration();
+    inputFile.click();
+    previousInputFile = inputFile;
+}
+
+/**
+ * @param {File} file 
+ */
+async function uploadFile(file){
+    const dragNDropStatusMsg = document.querySelector(".drag-n-drop .status");
+    dragNDropStatusMsg.textContent = "Uploading...";
+
+    fetch("/aidb/upload?name=" + file.name, {
+        method: "POST", 
+        body: await file.arrayBuffer(),
+        headers: {
+            "content-type": file.type
+        }
+    }).then(()=>{
+        dragNDropStatusMsg.textContent = "Uploaded";
+    }).catch(()=>{
+        dragNDropStatusMsg.textContent = "Error Encountered";
     });
-});
+}

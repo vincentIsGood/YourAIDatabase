@@ -114,8 +114,9 @@ def createCLLM(callbacks: 'list[BaseCallbackHandler]' = [StreamingStdOutCallback
     gpu_layers = 0
     if not config.DEVICE == "cpu":
         lib = config.CTRANSFORMERS_CUDA_LIB
-        gpu_layers = 50
+        gpu_layers = config.GPU_LAYERS
 
+    # https://www.reddit.com/r/LocalLLaMA/comments/1343bgz/what_model_parameters_is_everyone_using/
     return CancellableLLM(
         streaming=True,
         model=llmModelFolder,
@@ -123,6 +124,11 @@ def createCLLM(callbacks: 'list[BaseCallbackHandler]' = [StreamingStdOutCallback
         callbacks=callbacks,
         lib=lib,
         config={
+            "top_k": 40,
+            "top_p": 0.1,
+            "repetition_penalty": 1.176,
+            "temperature": 0.7,
+            "batch_size": 64,
             "gpu_layers": gpu_layers
         }
     )
@@ -194,14 +200,17 @@ def createLLM(callbacks: 'list[BaseCallbackHandler]' = [],
         device_map=config.DEVICE,
         max_length=1000,
         do_sample=True,
-        top_k=10,
         eos_token_id=tokenizer.eos_token_id,
     )
 
     return HuggingFacePipeline(
         pipeline=pipeline,
         model_kwargs={
-            "temperature": 0.5,
+            "top_k": 40,
+            "top_p": 0.1,
+            "repetition_penalty": 1.176,
+            "temperature": 0.7,
+            "batch_size": 64,
         },
         # callbacks=callbacks
     )

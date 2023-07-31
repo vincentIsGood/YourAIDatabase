@@ -16,7 +16,9 @@ IS_LLM_LOCAL = False
 
 PROMPT_TEMPLATE = """
 ### SYSTEM: 
-If you don't know the answer, just say that you don't know. You must provide a concise answer.
+Please behave and help the user. 
+If you don't know the answer, just say that you don't know. 
+Otherwise, you must provide a concise answer.
 
 ### USER: 
 Use the following pieces of info to answer the last question:

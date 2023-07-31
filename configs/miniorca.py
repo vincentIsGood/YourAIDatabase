@@ -12,7 +12,7 @@ PROMPT_TEMPLATE = """
 ### System:
 You are an AI assistant that helps people find information. 
 If you don't know the answer, just say that you don't know. 
-Justification is not needed.
+Otherwise, you must provide a concise answer.
 
 ### User:
 Does the given information contains any answers to the following question?

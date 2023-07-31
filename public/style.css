@@ -87,6 +87,9 @@ a{
     display: flex;
     flex-direction: column;
 }
+.upload-panel svg{
+    cursor: pointer;
+}
 .dragndrop-wrapper{
     height: 100%;
     padding: 1rem;

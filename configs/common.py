@@ -8,6 +8,9 @@ CTRANSFORMERS_CUDA_LIB = None
 # DEVICE = "cuda"
 # CTRANSFORMERS_CUDA_LIB = getCTransformersCudaLib_Windows()
 
+# use how much GPU (if enabled)
+GPU_LAYERS = 50
+
 SKIP_PROMPT = True
 
 ### WebApp Config

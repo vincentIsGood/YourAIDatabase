@@ -35,6 +35,8 @@ def loadWebData(urls: 'list[str]'):
     loader.cleanupTmp()
     return loader.getDocs()
 
+
+
 if __name__ == "__main__":
     loadedDocs = loadData()
     if len(loadedDocs) == 0:
