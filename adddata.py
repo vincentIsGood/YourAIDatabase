@@ -4,7 +4,7 @@ import shutil
 
 import configs.common as config
 from configs.common import model_config
-from lib.DocLoader import LocalFileLoader, WebFileLoader
+from lib.docloader import LocalFileLoader, WebFileLoader
 import lib.utils.file_utils as file_utils
 
 def loadData():
