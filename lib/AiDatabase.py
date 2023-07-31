@@ -186,7 +186,7 @@ def createCLLM(callbacks: 'list[BaseCallbackHandler]' = [StreamingStdOutCallback
             "top_p": 0.1,
             "repetition_penalty": 1.176,
             "temperature": 0.7,
-            "batch_size": 64,
+            "batch_size": 512,
             "gpu_layers": gpu_layers
         }
     )

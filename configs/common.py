@@ -8,7 +8,7 @@ CTRANSFORMERS_CUDA_LIB = None
 # DEVICE = "cuda"
 # CTRANSFORMERS_CUDA_LIB = getCTransformersCudaLib_Windows()
 
-## GPU: LlamaCpp is faster and uses less memory.
+## GPU: LlamaCpp is a bit faster and uses less memory.
 ## CPU: ctransformers has a huge edge on memory. (13b model RAM: << 1GB)
 USE_LLAMACPP_INSTEAD_OF_CTRANSFORMERS = False
 
