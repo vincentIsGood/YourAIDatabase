@@ -6,7 +6,7 @@
 ctransformers
 
 ## llama-cpp-python (with GPU, see https://python.langchain.com/docs/integrations/llms/llamacpp)
-llama-cpp-python
+# llama-cpp-python
 
 transformers
 langchain
