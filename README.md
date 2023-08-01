@@ -67,6 +67,14 @@ You have 2 options: `llama-cpp-python` or `ctransformers`. The difference is as 
 ## CPU: ctransformers has a huge edge on memory. (13b model RAM: << 1GB)
 ```
 
+<details>
+<summary>Mac Metal Problem</summary>
+
+When you encounter compilation problems while loading library `ggml-metal.metal`, like `Error: Use of undeclared identifier 'assert'`, `constant int64_t`, blah blah blah.
+
+Try to upgrade your python. Currently, I am using `python 3.10.12` (upgrade with pyenv or whatever)
+</details>
+
 ### `llama-cpp-python`
 According to [LangChain](https://python.langchain.com/docs/integrations/llms/llamacpp)'s instruction:
 ```sh
