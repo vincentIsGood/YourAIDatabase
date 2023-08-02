@@ -1,3 +1,5 @@
+# download torch on its offical website
+
 # C LLM for GGML support (download either `ctransformers` OR `llama-cpp-python` OR both)
 ## Useful environment vars (for CUDA 11)
 # set PYTHONUTF8=1  (useful on windows)
@@ -24,4 +26,5 @@ tabulate
 pdf2image
 pytesseract
 
-# download torch on its offical website
+flask
+waitress
