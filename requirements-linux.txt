@@ -1,0 +1,28 @@
+# download torch on its offical website
+
+# C LLM for GGML support (download either `ctransformers` OR `llama-cpp-python` OR both)
+## Useful environment vars (for CUDA 11)
+# set PYTHONUTF8=1  (useful on windows)
+# set CT_CUBLAS=1   (build ctransformers with CUDA enabled)
+# Ref: https://github.com/marella/ctransformers/blob/main/README.md#langchain
+ctransformers
+
+## llama-cpp-python (with GPU, see https://python.langchain.com/docs/integrations/llms/llamacpp)
+# llama-cpp-python
+
+pydantic
+transformers
+sentence_transformers
+langchain == 0.0.239
+langchain[llms]
+unstructured[local-inference] >= 0.8.1
+chromadb
+
+requests
+python-magic
+tabulate
+pdf2image
+pytesseract
+
+flask
+waitress
