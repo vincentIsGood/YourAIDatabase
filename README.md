@@ -37,6 +37,14 @@ python3 flask_main.py
 
 Then, head to [http://127.0.0.1:5022/app/](http://127.0.0.1:5022/app/)
 
+<details>
+<summary>Notes on HTML-based resource</summary>
+
+For *url upload*, it purely downloads online resources. If the website is not server-side rendered, you get nothing out of the url. (eg. Reddit)
+
+If you really want to grab the content of a webpage, you are recommended to save the page as `pdf` on a browser.
+</details>
+
 ### Command line
 Steps to add and query documents:
 
