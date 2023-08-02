@@ -25,4 +25,5 @@ pdf2image
 pytesseract
 
 flask
+flask_cors
 waitress
