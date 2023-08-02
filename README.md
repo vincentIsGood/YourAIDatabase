@@ -136,6 +136,10 @@ CTRANSFORMERS_CUDA_LIB = getCTransformersCudaLib_Unix()
 ```
 </details>
 
+## Caution
+The web application provided in this project is meant to work on localhost. 
+Do not try to expose it to the public.
+
 ## Notes
 Used: Chromadb, LangChain, Llama Cpp Python, Ctransformers, HuggingFace, Flask
 

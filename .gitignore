@@ -12,7 +12,3 @@ docs/**
 !docs/EmployeeSituation.txt
 
 models/**
-
-## Webapp (not yet ready)
-# flask_main.py
-# public/

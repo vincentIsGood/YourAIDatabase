@@ -152,6 +152,12 @@ function docUploadHandlers(){
 
     addIcon.addEventListener("click", selectFileToUpload);
     uploadIcon.addEventListener("click", selectFileToUpload);
+    
+    const urlUploadField = document.querySelector("#url-input");
+    const urlUploadButton = document.querySelector("#url-upload");
+    urlUploadButton.addEventListener("click", ()=>{
+        uploadUrl(urlUploadField.value);
+    })
 }
 
 let previousInputFile = null;
@@ -179,11 +185,28 @@ async function uploadFile(file){
     const dragNDropStatusMsg = document.querySelector(".drag-n-drop .status");
     dragNDropStatusMsg.textContent = "Uploading...";
 
-    fetch("/aidb/upload?name=" + file.name, {
+    return fetch("/aidb/upload?name=" + file.name, {
         method: "POST", 
         body: await file.arrayBuffer(),
         headers: {
             "content-type": file.type
+        }
+    }).then(()=>{
+        dragNDropStatusMsg.textContent = "Uploaded";
+    }).catch(()=>{
+        dragNDropStatusMsg.textContent = "Error Encountered";
+    });
+}
+
+async function uploadUrl(url){
+    const dragNDropStatusMsg = document.querySelector(".drag-n-drop .status");
+    dragNDropStatusMsg.textContent = "Uploading...";
+    
+    return fetch("/aidb/urlupload", {
+        method: "POST", 
+        body: url,
+        headers: {
+            "content-type": "text/plain"
         }
     }).then(()=>{
         dragNDropStatusMsg.textContent = "Uploaded";
