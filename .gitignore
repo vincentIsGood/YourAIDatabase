@@ -10,6 +10,5 @@ chroma_db/**
 
 tmp/**
 docs/**
-!docs/EmployeeSituation.txt
 
 models/**
