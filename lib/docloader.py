@@ -1,4 +1,6 @@
+import sys
 import os
+import traceback
 from typing import List, Type, Tuple
 from langchain.document_loaders import (
     TextLoader, 
@@ -104,12 +106,18 @@ class WebFileLoader(LocalFileLoader):
     def loadWebDoc(self, url):
         print("[+] Trying to download doc: ", url)
         try:
-            res = requests.get(url)
+            res = requests.get(url, allow_redirects=True)
+            if res.status_code != 200:
+                raise Exception("Remote server responded with non-ok code: ", res.status_code)
             baseFilename = os.path.basename(res.url)
             if baseFilename == "":
-                baseFilename = randomString()
+                baseFilename = randomString(10)
+
             if not "." in baseFilename:
-                baseFilename + mimetypes.guess_extension(res.headers.get("content-type"))
+                contentType = res.headers.get("content-type")
+                if ";" in contentType:
+                    contentType = contentType[:contentType.index(";")]
+                baseFilename = baseFilename + mimetypes.guess_extension(contentType)
             
             outFilename = self.tmpDir + "/" + baseFilename
             print("[+] Saving doc to ", outFilename)
@@ -117,8 +125,9 @@ class WebFileLoader(LocalFileLoader):
                 f.write(res.content)
             
             self.loadDoc(outFilename, res.url)
-        except Exception:
-            print("[-] Cannot add document")
+        except Exception as e:
+            # traceback.print_exception(*sys.exc_info())
+            print("[-] Cannot add document: ", e)
 
     def cleanupTmp(self):
         print("[+] Removing tmp directory: ", self.tmpDir)
