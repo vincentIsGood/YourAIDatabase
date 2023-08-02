@@ -12,7 +12,8 @@ CTRANSFORMERS_CUDA_LIB = None
 ## CPU: ctransformers has a huge edge on memory. (13b model RAM: << 1GB)
 USE_LLAMACPP_INSTEAD_OF_CTRANSFORMERS = False
 
-# use how much GPU (if enabled); GPU_LAYERS = 20 (13b model: ~4GB. After query ~6GB)
+# use how much GPU (if enabled); `GPU_LAYERS = 20` (13b model: ~4GB. After query ~6GB)
+# For Mac users using Metal.     `GPU_LAYERS = 1` is required
 ## ctransformers will get stuck waiting for more GPU, if value is too large
 GPU_LAYERS = 20
 
