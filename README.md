@@ -4,6 +4,8 @@ Give your documents to the AI and let your LLM to analyze your documents on quer
 ## How to use it
 First, make sure you have `torch` installed. 
 
+If you are using Mac, you may need to `export HNSWLIB_NO_NATIVE=1` before building chromadb.
+
 Then, install project dependencies with 
 ```sh
 pip install -r requirements.txt
