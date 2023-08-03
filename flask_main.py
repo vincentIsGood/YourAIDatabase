@@ -201,7 +201,7 @@ async def wsHandler(websocket: WebSocketServerProtocol):
 
 async def websocketMain():
     print(f"[+] Starting websocket server on port {WEBSOCKET_PORT}")
-    async with serve(wsHandler, "127.0.0.1", WEBSOCKET_PORT):
+    async with serve(wsHandler, "0.0.0.0", WEBSOCKET_PORT):
         await asyncio.Future()
 
 
