@@ -1,3 +1,4 @@
+let WS_PORT = 5023
 
 let lock = false;
 let sources = new Set();
@@ -15,7 +16,7 @@ function queryAiDatabase(query){
         }
         jobId = res;
         
-        const websocket = new WebSocket("ws://" + getHostExceptPort());
+        const websocket = new WebSocket(`ws://${getHostExceptPort()}:${WS_PORT}`);
         // window.websocket = websocket;
 
         let assistantDiv = null;
