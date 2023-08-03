@@ -14,8 +14,8 @@ function queryAiDatabase(query){
             return;
         }
         jobId = res;
-
-        const websocket = new WebSocket("ws://localhost:5023");
+        
+        const websocket = new WebSocket("ws://" + getHostExceptPort());
         // window.websocket = websocket;
 
         let assistantDiv = null;
@@ -213,4 +213,11 @@ async function uploadUrl(url){
     }).catch(()=>{
         dragNDropStatusMsg.textContent = "Error Encountered";
     });
+}
+
+function getHostExceptPort(){
+    const host = window.location.host;
+    if(host.includes(":"))
+        return host.substring(0, host.lastIndexOf(":"));
+    return host;
 }
