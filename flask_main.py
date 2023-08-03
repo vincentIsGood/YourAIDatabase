@@ -200,7 +200,7 @@ async def wsHandler(websocket: WebSocketServerProtocol):
     print("[+] Closing connection for: %s" % str(websocket.remote_address))
 
 async def websocketMain():
-    print(f"[+] Starting websocket server on port {WEBSOCKET_PORT}")
+    print(f"[+] Starting websocket server on 0.0.0.0:{WEBSOCKET_PORT}")
     async with serve(wsHandler, "0.0.0.0", WEBSOCKET_PORT):
         await asyncio.Future()
 
