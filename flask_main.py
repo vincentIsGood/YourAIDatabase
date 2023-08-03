@@ -212,13 +212,12 @@ def flask_main():
     print(f"[+] Starting flask webserver")
     app.run(port=FLASK_PORT)
 
-def waitress_main():
-    from waitress import serve
+def create_app():
     websocketThread = threading.Thread(target=lambda: asyncio.run(websocketMain()), daemon=True)
     websocketThread.start()
 
     print(f"[+] Starting waitress webserver")
-    serve(app, port=FLASK_PORT)
+    return app
 
 if __name__ == "__main__":
     flask_main()
