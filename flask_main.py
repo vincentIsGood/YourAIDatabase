@@ -205,9 +205,20 @@ async def websocketMain():
         await asyncio.Future()
 
 
-if __name__ == "__main__":
+def flask_main():
     websocketThread = threading.Thread(target=lambda: asyncio.run(websocketMain()), daemon=True)
     websocketThread.start()
 
     print(f"[+] Starting flask webserver")
     app.run(port=FLASK_PORT)
+
+def waitress_main():
+    from waitress import serve
+    websocketThread = threading.Thread(target=lambda: asyncio.run(websocketMain()), daemon=True)
+    websocketThread.start()
+
+    print(f"[+] Starting waitress webserver")
+    serve(app, port=FLASK_PORT)
+
+if __name__ == "__main__":
+    flask_main()
