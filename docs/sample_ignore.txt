@@ -1,0 +1,2 @@
+This is just a sample txt file. But this file will be ignored
+by adddata.py
