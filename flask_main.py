@@ -147,7 +147,7 @@ def uploadDocument():
     if not request.data or filename == "" or ".." in filename:
         return Response(status=400)
     
-    outFilePath = os.path.join(app.config["UPLOAD_FOLDER"], filename)
+    outFilePath = os.path.normpath(os.path.join(app.config["UPLOAD_FOLDER"], filename))
     if os.path.exists(outFilePath):
         return Response(status=204)
     
