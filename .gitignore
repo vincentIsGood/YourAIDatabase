@@ -13,6 +13,5 @@ chroma_db/**
 
 tmp/**
 docs/**
-!docs/sample_ignore.txt
 
 models/**
