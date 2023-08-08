@@ -2,6 +2,9 @@ import sys
 import os
 import traceback
 from typing import List, Type, Tuple
+from typing_extensions import TypedDict
+from dataclasses import dataclass
+from datetime import datetime
 from langchain.document_loaders import (
     TextLoader, 
     CSVLoader, 
@@ -42,10 +45,28 @@ SUPPORTED_LOADERS: 'dict[str, Tuple[Type[BaseLoader], object]]' = {
     "html": (UnstructuredHTMLLoader, {}),
 }
 
+def getCurrentTime():
+    """returns number of seconds since 1/1/1970
+    """
+    # return datetime.today().strftime("%d/%m/%Y %H:%M:%S")
+    return int(datetime.now().timestamp())
+
+def fromTimestamp(time):
+    return datetime.fromtimestamp(time).strftime("%d/%m/%Y %H:%M:%S")
+
+def parseDateTime(date):
+    return int(datetime.strptime(date, "%d/%m/%Y %H:%M:%S").timestamp())
+
+class ExtraMetadata(TypedDict):
+    source: str
+    time: int
+
+def ExtraMetadataDefault():
+    return {"source": None, "time": getCurrentTime()}
+
 class LocalFileLoader:
     def __init__(self, encoding = "utf-8", useDefaultLoader = False):
-        """
-            useDefaultLoader: use default loader if an unknown file extension is encountered
+        """useDefaultLoader: use default loader if an unknown file extension is encountered
         """
         self.encoding = encoding
         self.useDefaultLoader = useDefaultLoader
@@ -54,13 +75,11 @@ class LocalFileLoader:
             chunk_size=4000, 
             chunk_overlap=0)
 
-    def loadDoc(self, filePath, source = None):
-        """source: If not None, overwrite the metadata "source" of docs with this value
-        """
+    def loadDoc(self, filePath, extraMetadata: ExtraMetadata = ExtraMetadataDefault()):
         ext = file_utils.fileExt(filePath)
         if ext in SUPPORTED_LOADERS:
             loaderClassType, loaderArgs = SUPPORTED_LOADERS[file_utils.fileExt(filePath)]
-        else: 
+        else:
             if not self.useDefaultLoader:
                 print("[!] Cannot find loader for file '%s'. Ignoring it." % filePath)
                 return
@@ -74,9 +93,12 @@ class LocalFileLoader:
         loader = loaderClassType(filePath, **loaderArgs)
         docs = loader.load()
 
-        if source:
-            for doc in docs:
-                doc.metadata = {"source": source}
+        for doc in docs:
+            if extraMetadata["source"]:
+                # override source set by loader
+                doc.metadata = extraMetadata
+            else:
+                doc.metadata = {**extraMetadata, **doc.metadata}
 
         # print(doc)
         for doc in self.textSplitter.split_documents(docs):
@@ -103,7 +125,7 @@ class WebFileLoader(LocalFileLoader):
         if not os.path.exists(tmpFolder):
             os.mkdir(tmpFolder, mode=755)
         
-    def loadWebDoc(self, url):
+    def loadWebDoc(self, url, extraMetadata: ExtraMetadata = ExtraMetadataDefault()):
         print("[+] Trying to download doc: ", url)
         try:
             res = requests.get(url, allow_redirects=True)
@@ -124,7 +146,8 @@ class WebFileLoader(LocalFileLoader):
             with open(outFilename, "wb+") as f:
                 f.write(res.content)
             
-            self.loadDoc(outFilename, res.url)
+            extraMetadata["source"] = res.url
+            self.loadDoc(outFilename, extraMetadata)
         except Exception as e:
             # traceback.print_exception(*sys.exc_info())
             print("[-] Cannot add document: ", e)
