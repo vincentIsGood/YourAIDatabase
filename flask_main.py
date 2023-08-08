@@ -161,6 +161,16 @@ def uploadDocument():
     aiDatabase.addDocsToDb(loadedDocs)
     return Response(status=201)
 
+@app.route("/aidb/viewdocs")
+def viewAllDocs():
+    return aiDatabase.getAllDocs()
+
+@app.route("/aidb/removedoc", methods=["DELETE"])
+def deleteDocument():
+    id = request.args.get("id")
+    aiDatabase.deleteDocsFromDb([id])
+    return Response(status=200)
+
 @app.route("/aidb", methods=["GET"])
 def handleDatabaseQuery():
     global currentJob, queryJob

@@ -22,7 +22,6 @@ from transformers import (AutoModelForCausalLM, AutoTokenizer,
 import configs.common as config
 from configs.common import model_config
 
-
 class AiDatabase:
     stopRequested = False
 
@@ -76,8 +75,28 @@ class AiDatabase:
         else:
             self.stopRequested = True
 
+    class Record:
+        id: str
+        metadata: str
+
+    def getAllDocs(self) -> 'list[Record]':
+        collection = self.chromadb._collection.get(include=["metadatas"])
+        if not collection:
+            return []
+        
+        ids = collection["ids"]
+        metadatas = collection["metadatas"]
+        result = []
+        for i in range(len(ids)):
+            result.append({"id": ids[i], "metadata": metadatas[i]})
+        return result
+
     def addDocsToDb(self, docs: 'list[Document]'):
         self.chromadb.add_documents(docs)
+    
+    def deleteDocsFromDb(self, ids: 'list[str]'):
+        print("[+] Deleting docs: ", ids)
+        self.chromadb.delete(ids)
 
 
 def createCLLM(callbacks: 'list[BaseCallbackHandler]' = [StreamingStdOutCallbackHandler()]):
