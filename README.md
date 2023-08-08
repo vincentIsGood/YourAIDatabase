@@ -11,12 +11,13 @@ Then, install project dependencies with
 pip install -r requirements.txt
 ```
 
-Setup configuration in [`configs/common.py`](configs/common.py):
+Setup configuration in [`configs/common.py`](configs/common.py). Example:
 ```py
-# By default, llama2 is used. Hence the following is required and cannot be empty
-from . import llama2 as model_config
+from . import llama2_ggml as model_config
 
 LOCAL_FILES_ONLY = False
+
+## Some models may need HuggingFace Token (eg. llama2)
 HF_ACCESS_TOKEN = "hf_...."
 ```
 
