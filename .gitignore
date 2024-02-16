@@ -3,9 +3,6 @@
 *.private*
 *_private*
 
-# Not ready
-docker
-
 # Base
 __pycache__
 venv

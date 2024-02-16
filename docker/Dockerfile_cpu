@@ -1,0 +1,21 @@
+FROM python:3.10.12
+WORKDIR /app
+COPY . /app/
+
+RUN useradd --create-home --uid 1000 --shell /bin/bash flasker && \
+    usermod -aG sudo flasker && \
+    echo "flasker ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers
+
+RUN chown root:flasker -R /app/YourAIDatabase
+WORKDIR /app/YourAIDatabase
+
+USER flasker
+RUN mkdir -p /app/YourAIDatabase/chroma_db
+RUN mkdir -p /app/YourAIDatabase/docs
+RUN mkdir -p /app/YourAIDatabase/models
+RUN pip3 install --upgrade pip && \
+    pip3 install -r requirements-linux.txt && \
+    pip3 cache purge
+
+WORKDIR /app/YourAIDatabase/docker
+EXPOSE 5022 5023
